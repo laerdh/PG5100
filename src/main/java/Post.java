@@ -4,21 +4,32 @@ import java.util.List;
 
 @Entity
 @NamedQueries({
-        @NamedQuery(name = Post.GET_ALL, query = "select p from Post p")
+        @NamedQuery(name = Post.GET_ALL_POSTS, query =
+                "select p from Post p"),
+        @NamedQuery(name = Post.GET_TOTAL_POSTS, query =
+                "select count(p) from Post p"),
+        @NamedQuery(name = Post.GET_TOTAL_POSTS_PER_COUNTRY, query =
+                "select count(p) from Post p where p.author.address.country = :country")
 })
 public class Post {
 
-    public static final String GET_ALL = "GET_ALL";
+    // Constants for named queries names
+    public static final String GET_ALL_POSTS = "Post.GET_ALL_POSTS";
+    public static final String GET_TOTAL_POSTS = "Post.TOTAL_POSTS";
+    public static final String GET_TOTAL_POSTS_PER_COUNTRY = "Post.POSTS_PER_COUNTRY";
+
 
     @Id
     @GeneratedValue
     private Long id;
 
+    private String text;
+    private int upVotes;
+    private int downVotes;
 
     // Many posts can belong to an author
     @ManyToOne
     private User author;
-
 
     // One post can have many comments
     @OneToMany(cascade = CascadeType.ALL)
@@ -29,8 +40,6 @@ public class Post {
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedAt;
-
-    private String text;
 
 
     public Post(){}
@@ -59,4 +68,12 @@ public class Post {
     public List<Comment> getComments() { return comments; }
 
     public void setComments(List<Comment> comments) { this.comments = comments; }
+
+    public int getUpVotes() { return upVotes; }
+
+    public void setUpVotes(int upVotes) { this.upVotes = upVotes; }
+
+    public int getDownVotes() { return downVotes; }
+
+    public void setDownVotes(int downVotes) { this.downVotes = downVotes; }
 }

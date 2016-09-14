@@ -14,21 +14,6 @@ public class UserTest {
     private EntityManagerFactory factory = Persistence.createEntityManagerFactory("DB");
     private EntityManager em;
 
-    private boolean persistInTransaction(Object... obj) {
-        EntityTransaction tx = em.getTransaction();
-        tx.begin();
-        try {
-            for (Object o : obj) {
-                em.persist(o);
-            }
-            tx.commit();
-        } catch (Exception e) {
-            System.out.println("FAILED TRANSACTION");
-            tx.rollback();
-            return false;
-        }
-        return true;
-    }
 
     @Before
     public void setUp() throws Exception {
@@ -109,17 +94,65 @@ public class UserTest {
             assertTrue(persistInTransaction(post));
         }
 
-        Query query = em.createNamedQuery(Post.GET_ALL);
-        List<Post> postsFound = query.getResultList();
+        Query query = em.createNamedQuery(Post.GET_TOTAL_POSTS);
+        Long postsFound = (Long) query.getSingleResult();
 
-        // Assert that number of found posts are equal to nbOfPost
-        assertEquals(postsFound.size(), nbOfPost);
+        assertEquals(postsFound.intValue(), nbOfPost);
     }
 
-    // TESTS FOR NAMED QUERIES
+
+    // Tests for named queries
+
 
     @Test
-    public void testShouldGetUserByCountry() throws Exception {
+    public void testShouldGetAllUsers() throws Exception {
+        // ARRANGE
+        int nbOfUsers = 5;
+
+        for (int i = 0; i < nbOfUsers; i++) {
+            User user = new User();
+            user.setName("User" + i);
+
+            assertTrue(persistInTransaction(user));
+        }
+
+
+        // ACT
+        Query query = em.createNamedQuery(User.GET_ALL_USERS);
+        List<User> usersFound = query.getResultList();
+
+
+        // ASSERT
+        // ...that number of users found equals nbOfUsers
+        assertEquals(usersFound.size(), nbOfUsers);
+    }
+
+    @Test
+    public void testShouldGetTotalUsers() throws Exception {
+        // ARRANGE
+        int nbOfUsers = 10;
+
+        for (int i = 0; i < nbOfUsers; i++) {
+            User user = new User();
+            user.setName("User" + i);
+
+            assertTrue(persistInTransaction(user));
+        }
+
+
+        // ACT
+        Query query = em.createNamedQuery(User.GET_TOTAL_USERS);
+        Long usersFound = (Long) query.getSingleResult();
+
+
+        // ASSERT
+        // ...that total users matches nbOfUsers
+        assertEquals(usersFound.intValue(), nbOfUsers);
+    }
+
+    @Test
+    public void testShouldGetTotalUsersPerCountry() throws Exception {
+        // ARRANGE
         User user = new User();
         Address address = new Address();
         address.setCountry("Norway");
@@ -128,11 +161,121 @@ public class UserTest {
 
         assertTrue(persistInTransaction(user, address));
 
-        Query query = em.createNamedQuery(User.GET_BY_COUNTRY);
-        query.setParameter("country", "Norway");
-        User found = (User) query.getSingleResult();
 
-        // Assert that country are the same
-        assertEquals(user.getAddress().getCountry(), found.getAddress().getCountry());
+        // ACT
+        Query query = em.createNamedQuery(User.GET_TOTAL_USERS_PER_COUNTRY);
+        query.setParameter("country", "Norway");
+        Long usersFound = (Long) query.getSingleResult();
+
+
+        // ASSERT
+        // ...that country are the same
+        assertEquals(usersFound.intValue(), 1);
     }
+
+    @Test
+    public void testShouldGetTopPoster() throws Exception {
+        // ARRANGE
+        User user1 = new User();
+        user1.setName("User1");
+
+        User user2 = new User();
+        user2.setName("User2");
+
+        List<Post> user1Posts = getCollection(10, Post.class);
+        List<Post> user2Posts = getCollection(50, Post.class);
+
+        persistListInTransaction(user1Posts);
+        persistListInTransaction(user2Posts);
+
+        user1.setPosts(user1Posts);
+        user2.setPosts(user2Posts);
+
+        assertTrue(persistInTransaction(user1, user2));
+
+
+        // ACT
+        TypedQuery<User> query = em.createNamedQuery(User.TOP_X_POSTERS, User.class);
+        query.setMaxResults(1);
+        User userFound = query.getSingleResult();
+
+
+        // ASSERT
+        // ...that User2 have the most posts (20)
+        assertEquals(user2.getName(), userFound.getName());
+    }
+
+    @Test
+    public void testShouldGetTopCommenter() throws Exception {
+        // ARRANGE
+        User user1 = new User();
+        user1.setName("User1");
+
+        User user2 = new User();
+        user2.setName("User2");
+
+        List<Comment> user1Comments = getCollection(500, Comment.class);
+        List<Comment> user2Comments = getCollection(100, Comment.class);
+
+        persistListInTransaction(user1Comments);
+        persistListInTransaction(user2Comments);
+
+        user1.setComments(user1Comments);
+        user2.setComments(user2Comments);
+
+        assertTrue(persistInTransaction(user1, user2));
+
+
+        // ACT
+        TypedQuery<User> query = em.createNamedQuery(User.TOP_X_COMMENTERS, User.class);
+        query.setMaxResults(1);
+        User userFound = query.getSingleResult();
+
+
+        // ASSERT
+        // ...that User1 have the most comments (500)
+        assertEquals(user1.getName(), userFound.getName());
+    }
+
+
+    // Helper methods
+
+
+    private boolean persistInTransaction(Object... obj) {
+        EntityTransaction tx = em.getTransaction();
+        tx.begin();
+        try {
+            for (Object o : obj) {
+                em.persist(o);
+            }
+            tx.commit();
+        } catch (Exception e) {
+            System.out.println("FAILED TRANSACTION");
+            tx.rollback();
+            return false;
+        }
+        return true;
+    }
+
+    private <T> void persistListInTransaction(List<T> list) {
+        for (T t : list) {
+            persistInTransaction(t);
+        }
+    }
+
+    private <T> List<T> getCollection(int size, Class<T> type) {
+        List<T> list = new ArrayList<>();
+
+        try {
+            for (int i = 0; i < size; i++) {
+                list.add(type.newInstance());
+            }
+        } catch (InstantiationException | IllegalAccessException e) {
+            System.out.println("FAILED");
+            fail();
+        }
+
+        return list;
+    }
+
 }
