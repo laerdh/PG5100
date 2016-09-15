@@ -2,11 +2,16 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import javax.ejb.EJBTransactionRolledbackException;
 import javax.persistence.*;
+import javax.validation.*;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.Assert.*;
 
@@ -14,33 +19,49 @@ public class UserTest {
     private EntityManagerFactory factory = Persistence.createEntityManagerFactory("DB");
     private EntityManager em;
 
+    private ValidatorFactory valFactory;
+    private Validator validator;
+
+    // Test user details
+    private String testerName = "Tester";
+    private String testerSurname = "Tester";
+    private String testerEmail = "test@test.com";
+
 
     @Before
     public void setUp() throws Exception {
         em = factory.createEntityManager();
+
+        valFactory = Validation.buildDefaultValidatorFactory();
+        validator = valFactory.getValidator();
     }
 
     @After
     public void tearDown() throws Exception {
         em.close();
         factory.close();
+        valFactory.close();
     }
 
     @Test
     public void testEmptyUser() throws Exception {
         User user = new User();
 
+        assertTrue(hasViolations(user));
+        assertFalse(persistInTransaction(user));
+    }
+
+    @Test
+    public void testValidUser() throws Exception {
+        User user = getValidUser();
+
+        assertFalse(hasViolations(user));
         assertTrue(persistInTransaction(user));
-
-        User found = em.find(User.class, user.getId());
-
-        assertNotNull(found.getId());
     }
 
     @Test
     public void testUserWithName() throws Exception {
-        User user = new User();
-        user.setName("Tester");
+        User user = getValidUser();
 
         assertTrue(persistInTransaction(user));
 
@@ -51,14 +72,77 @@ public class UserTest {
     }
 
     @Test
+    public void testNoName() throws Exception {
+        User user = getValidUser();
+        user.setName("");
+
+        assertTrue(hasViolations(user));
+        assertFalse(persistInTransaction(user));
+    }
+
+    @Test
+    public void testLongFirstName() throws Exception {
+        User user = getValidUser();
+        user.setName(new String(new char[1_000]));
+
+        assertTrue(hasViolations(user));
+        assertFalse(persistInTransaction(user));
+    }
+
+    @Test
+    public void testLongSurname() throws Exception {
+        User user = getValidUser();
+        user.setName(new String(new char[1_000]));
+
+        assertTrue(hasViolations(user));
+        assertFalse(persistInTransaction(user));
+    }
+
+    @Test
+    public void testRegistrationInFuture() throws Exception {
+        User user = getValidUser();
+        user.setDateOfRegistration(Date.from(LocalDate.of(2020, 1, 1).atStartOfDay(ZoneId.systemDefault()).toInstant()));
+
+        assertTrue(hasViolations(user));
+        assertFalse(persistInTransaction(user));
+    }
+
+    @Test
+    public void testInvalidEmail() throws Exception {
+        User user = getValidUser();
+        user.setEmail("test..test@test.com");
+
+        assertTrue(hasViolations(user));
+        assertFalse(persistInTransaction(user));
+
+        user.setEmail("test@test.t");
+
+        assertTrue(hasViolations(user));
+        assertFalse(persistInTransaction(user));
+
+        user.setEmail("t@t");
+
+        assertTrue(hasViolations(user));
+        assertFalse(persistInTransaction(user));
+    }
+
+    @Test
+    public void testValidEmail() throws Exception {
+        User user = getValidUser();
+        user.setEmail("Test@test.com");
+
+        assertFalse(hasViolations(user));
+        assertTrue(persistInTransaction(user));
+    }
+
+    @Test
     public void testUserWithAddress() throws Exception {
-        User user = new User();
+        User user = getValidUser();
         Address address = new Address();
 
         address.setCountry("Norway");
         address.setCity("Oslo");
         address.setPostcode((long) 484);
-        user.setName("Tester");
         user.setAddress(address);
 
         assertTrue(persistInTransaction(user, address));
@@ -66,8 +150,7 @@ public class UserTest {
 
     @Test
     public void testUserAddPost() throws Exception {
-        User user = new User();
-        user.setName("Tester");
+        User user = getValidUser();
 
         Post post = new Post();
         post.setText("This post is for test-purposes");
@@ -79,8 +162,7 @@ public class UserTest {
 
     @Test
     public void testUserAddsSeveralPosts() throws Exception {
-        User user = new User();
-        user.setName("Tester");
+        User user = getValidUser();
 
         assertTrue(persistInTransaction(user));
 
@@ -110,7 +192,7 @@ public class UserTest {
         int nbOfUsers = 5;
 
         for (int i = 0; i < nbOfUsers; i++) {
-            User user = new User();
+            User user = getValidUser();
             user.setName("User" + i);
 
             assertTrue(persistInTransaction(user));
@@ -133,7 +215,7 @@ public class UserTest {
         int nbOfUsers = 10;
 
         for (int i = 0; i < nbOfUsers; i++) {
-            User user = new User();
+            User user = getValidUser();
             user.setName("User" + i);
 
             assertTrue(persistInTransaction(user));
@@ -153,12 +235,12 @@ public class UserTest {
     @Test
     public void testShouldGetUserCountries() throws Exception {
         // Arrange
-        User user1 = new User();
+        User user1 = getValidUser();
         Address a1 = new Address();
         a1.setCountry("Norway");
         user1.setAddress(a1);
 
-        User user2 = new User();
+        User user2 = getValidUser();
         Address a2 = new Address();
         a2.setCountry("France");
         user2.setAddress(a2);
@@ -180,10 +262,9 @@ public class UserTest {
     @Test
     public void testShouldGetTotalUsersPerCountry() throws Exception {
         // Arrange
-        User user = new User();
+        User user = getValidUser();
         Address address = new Address();
         address.setCountry("Norway");
-        user.setName("Tester");
         user.setAddress(address);
 
         assertTrue(persistInTransaction(user, address));
@@ -203,10 +284,10 @@ public class UserTest {
     @Test
     public void testShouldGetTopPoster() throws Exception {
         // Arrange
-        User user1 = new User();
+        User user1 = getValidUser();
         user1.setName("User1");
 
-        User user2 = new User();
+        User user2 = getValidUser();
         user2.setName("User2");
 
         List<Post> user1Posts = getCollection(10, Post.class);
@@ -235,10 +316,10 @@ public class UserTest {
     @Test
     public void testShouldGetTopCommenter() throws Exception {
         // Arrange
-        User user1 = new User();
+        User user1 = getValidUser();
         user1.setName("User1");
 
-        User user2 = new User();
+        User user2 = getValidUser();
         user2.setName("User2");
 
         List<Comment> user1Comments = getCollection(500, Comment.class);
@@ -267,6 +348,26 @@ public class UserTest {
 
     // Helper methods
 
+    private User getValidUser() {
+        User user = new User();
+
+        user.setName(testerName);
+        user.setSurname(testerSurname);
+        user.setEmail(testerEmail);
+        user.setDateOfRegistration(java.sql.Date.from(LocalDate.of(2010, 1, 1).atStartOfDay(ZoneId.systemDefault()).toInstant()));
+
+        return user;
+    }
+
+    private <T> boolean hasViolations(T obj) {
+        Set<ConstraintViolation<T>> violations = validator.validate(obj);
+
+        for (ConstraintViolation<T> cv : violations) {
+            System.out.println("VIOLATION: " + cv.toString());
+        }
+
+        return violations.size() > 0;
+    }
 
     private boolean persistInTransaction(Object... obj) {
         EntityTransaction tx = em.getTransaction();

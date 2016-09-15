@@ -1,7 +1,13 @@
 import org.hibernate.annotations.Cascade;
+import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Past;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 
@@ -34,9 +40,23 @@ public class User {
     @Id @GeneratedValue
     private Long id;
 
+    @NotNull
+    @Size(min = 2, max = 128)
     private String name;
+
+    @NotNull
+    @Size(min = 2, max = 128)
     private String surname;
+
+    @NotNull
+    @Pattern(regexp =
+            "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$")
     private String email;
+
+    @Past
+    @NotNull
+    @Temporal(TemporalType.DATE)
+    private Date dateOfRegistration;
 
     // User only have one address
     @OneToOne
@@ -69,6 +89,10 @@ public class User {
     public String getEmail() { return email; }
 
     public void setEmail(String email) { this.email = email; }
+
+    public Date getDateOfRegistration() { return dateOfRegistration; }
+
+    public void setDateOfRegistration(Date dateOfRegistration) { this.dateOfRegistration = dateOfRegistration; }
 
     public Address getAddress() { return address; }
 
