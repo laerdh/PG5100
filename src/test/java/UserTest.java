@@ -106,7 +106,7 @@ public class UserTest {
 
     @Test
     public void testShouldGetAllUsers() throws Exception {
-        // ARRANGE
+        // Arrange
         int nbOfUsers = 5;
 
         for (int i = 0; i < nbOfUsers; i++) {
@@ -117,19 +117,19 @@ public class UserTest {
         }
 
 
-        // ACT
+        // Act
         Query query = em.createNamedQuery(User.GET_ALL_USERS);
         List<User> usersFound = query.getResultList();
 
 
-        // ASSERT
+        // Assert
         // ...that number of users found equals nbOfUsers
         assertEquals(usersFound.size(), nbOfUsers);
     }
 
     @Test
     public void testShouldGetTotalUsers() throws Exception {
-        // ARRANGE
+        // Arrange
         int nbOfUsers = 10;
 
         for (int i = 0; i < nbOfUsers; i++) {
@@ -140,19 +140,46 @@ public class UserTest {
         }
 
 
-        // ACT
+        // Act
         Query query = em.createNamedQuery(User.GET_TOTAL_USERS);
         Long usersFound = (Long) query.getSingleResult();
 
 
-        // ASSERT
+        // Assert
         // ...that total users matches nbOfUsers
         assertEquals(usersFound.intValue(), nbOfUsers);
     }
 
     @Test
+    public void testShouldGetUserCountries() throws Exception {
+        // Arrange
+        User user1 = new User();
+        Address a1 = new Address();
+        a1.setCountry("Norway");
+        user1.setAddress(a1);
+
+        User user2 = new User();
+        Address a2 = new Address();
+        a2.setCountry("France");
+        user2.setAddress(a2);
+
+        assertTrue(persistInTransaction(user1, a1, user2, a2));
+
+
+        // Act
+        Query query = em.createNamedQuery(User.GET_USER_COUNTRIES);
+        List<String> countriesFound = query.getResultList();
+
+
+        // Assert
+        // ...that the countries match whats persisted to db
+        assertTrue(countriesFound.contains(a1.getCountry()));
+        assertTrue(countriesFound.contains(a2.getCountry()));
+    }
+
+    @Test
     public void testShouldGetTotalUsersPerCountry() throws Exception {
-        // ARRANGE
+        // Arrange
         User user = new User();
         Address address = new Address();
         address.setCountry("Norway");
@@ -162,20 +189,20 @@ public class UserTest {
         assertTrue(persistInTransaction(user, address));
 
 
-        // ACT
+        // ACt
         Query query = em.createNamedQuery(User.GET_TOTAL_USERS_PER_COUNTRY);
         query.setParameter("country", "Norway");
         Long usersFound = (Long) query.getSingleResult();
 
 
-        // ASSERT
+        // Assert
         // ...that country are the same
         assertEquals(usersFound.intValue(), 1);
     }
 
     @Test
     public void testShouldGetTopPoster() throws Exception {
-        // ARRANGE
+        // Arrange
         User user1 = new User();
         user1.setName("User1");
 
@@ -194,20 +221,20 @@ public class UserTest {
         assertTrue(persistInTransaction(user1, user2));
 
 
-        // ACT
+        // Act
         TypedQuery<User> query = em.createNamedQuery(User.TOP_X_POSTERS, User.class);
         query.setMaxResults(1);
         User userFound = query.getSingleResult();
 
 
-        // ASSERT
+        // Assert
         // ...that User2 have the most posts (20)
         assertEquals(user2.getName(), userFound.getName());
     }
 
     @Test
     public void testShouldGetTopCommenter() throws Exception {
-        // ARRANGE
+        // Arrange
         User user1 = new User();
         user1.setName("User1");
 
@@ -226,13 +253,13 @@ public class UserTest {
         assertTrue(persistInTransaction(user1, user2));
 
 
-        // ACT
+        // Act
         TypedQuery<User> query = em.createNamedQuery(User.TOP_X_COMMENTERS, User.class);
         query.setMaxResults(1);
         User userFound = query.getSingleResult();
 
 
-        // ASSERT
+        // Assert
         // ...that User1 have the most comments (500)
         assertEquals(user1.getName(), userFound.getName());
     }

@@ -11,6 +11,8 @@ import java.util.List;
                 "select u from User u"),
         @NamedQuery(name = User.GET_TOTAL_USERS, query =
                 "select count(u) from User u"),
+        @NamedQuery(name = User.GET_USER_COUNTRIES, query =
+                "select distinct u.address.country from User u"),
         @NamedQuery(name = User.GET_TOTAL_USERS_PER_COUNTRY, query =
                 "select count(u) from User u where u.address.country = :country"),
         @NamedQuery(name = User.TOP_X_POSTERS, query =
@@ -21,11 +23,12 @@ import java.util.List;
 public class User {
 
     // Constants for named queries names
-    public static final String GET_ALL_USERS = "Customer.GET_ALL_USERS";
-    public static final String GET_TOTAL_USERS = "Customer.GET_TOTAL_USERS";
-    public static final String GET_TOTAL_USERS_PER_COUNTRY = "Customer.POSTS_PER_COUNTRY";
-    public static final String TOP_X_POSTERS = "Customer.TOP_POSTERS";
-    public static final String TOP_X_COMMENTERS = "Customer.TOP_COMMENTERS";
+    public static final String GET_ALL_USERS = "User.GET_ALL_USERS";
+    public static final String GET_TOTAL_USERS = "User.GET_TOTAL_USERS";
+    public static final String GET_USER_COUNTRIES = "User.GET_USER_COUNTRIES";
+    public static final String GET_TOTAL_USERS_PER_COUNTRY = "User.POSTS_PER_COUNTRY";
+    public static final String TOP_X_POSTERS = "User.TOP_POSTERS";
+    public static final String TOP_X_COMMENTERS = "User.TOP_COMMENTERS";
 
 
     @Id @GeneratedValue
