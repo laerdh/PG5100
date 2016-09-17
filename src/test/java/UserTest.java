@@ -270,7 +270,7 @@ public class UserTest {
         assertTrue(persistInTransaction(user, address));
 
 
-        // ACt
+        // Act
         Query query = em.createNamedQuery(User.GET_TOTAL_USERS_PER_COUNTRY);
         query.setParameter("country", "Norway");
         Long usersFound = (Long) query.getSingleResult();

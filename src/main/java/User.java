@@ -59,7 +59,7 @@ public class User {
     private Date dateOfRegistration;
 
     // User only have one address
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     private Address address;
 
     // User can have many posts

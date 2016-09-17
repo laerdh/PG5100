@@ -1,4 +1,7 @@
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Past;
+import javax.validation.constraints.Size;
 import java.util.Date;
 import java.util.List;
 
@@ -23,11 +26,15 @@ public class Post {
     @GeneratedValue
     private Long id;
 
+    @NotNull
+    @Size(min = 2, max = 1024)
     private String text;
+
     private int upVotes;
     private int downVotes;
 
     // Many posts can belong to an author
+    @NotNull
     @ManyToOne
     private User author;
 
@@ -35,6 +42,7 @@ public class Post {
     @OneToMany(cascade = CascadeType.ALL)
     private List<Comment> comments;
 
+    @Past
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
 
@@ -42,7 +50,9 @@ public class Post {
     private Date updatedAt;
 
 
-    public Post(){}
+    public Post(){
+        createdAt = new Date();
+    }
 
 
     public Long getId() { return id; }
