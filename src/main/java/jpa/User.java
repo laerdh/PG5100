@@ -1,5 +1,4 @@
-import org.hibernate.annotations.Cascade;
-import org.hibernate.validator.constraints.Length;
+package jpa;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -29,12 +28,12 @@ import java.util.List;
 public class User {
 
     // Constants for named queries names
-    public static final String GET_ALL_USERS = "User.GET_ALL_USERS";
-    public static final String GET_TOTAL_USERS = "User.GET_TOTAL_USERS";
-    public static final String GET_USER_COUNTRIES = "User.GET_USER_COUNTRIES";
-    public static final String GET_TOTAL_USERS_PER_COUNTRY = "User.POSTS_PER_COUNTRY";
-    public static final String TOP_X_POSTERS = "User.TOP_POSTERS";
-    public static final String TOP_X_COMMENTERS = "User.TOP_COMMENTERS";
+    public static final String GET_ALL_USERS = "jpa.User.GET_ALL_USERS";
+    public static final String GET_TOTAL_USERS = "jpa.User.GET_TOTAL_USERS";
+    public static final String GET_USER_COUNTRIES = "jpa.User.GET_USER_COUNTRIES";
+    public static final String GET_TOTAL_USERS_PER_COUNTRY = "jpa.User.POSTS_PER_COUNTRY";
+    public static final String TOP_X_POSTERS = "jpa.User.TOP_POSTERS";
+    public static final String TOP_X_COMMENTERS = "jpa.User.TOP_COMMENTERS";
 
 
     @Id @GeneratedValue
@@ -58,15 +57,15 @@ public class User {
     @Temporal(TemporalType.DATE)
     private Date dateOfRegistration;
 
-    // User only have one address
+    // jpa.User only have one address
     @OneToOne(cascade = CascadeType.ALL)
     private Address address;
 
-    // User can have many posts
+    // jpa.User can have many posts
     @OneToMany(cascade = CascadeType.ALL)
     private List<Post> posts;
 
-    // User can have many comments
+    // jpa.User can have many comments
     @OneToMany
     private List<Comment> comments;
 

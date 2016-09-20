@@ -1,3 +1,5 @@
+package jpa;
+
 import javax.persistence.*;
 
 @Entity

@@ -1,3 +1,5 @@
+package jpa;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Past;
@@ -17,9 +19,9 @@ import java.util.List;
 public class Post {
 
     // Constants for named queries names
-    public static final String GET_ALL_POSTS = "Post.GET_ALL_POSTS";
-    public static final String GET_TOTAL_POSTS = "Post.TOTAL_POSTS";
-    public static final String GET_TOTAL_POSTS_PER_COUNTRY = "Post.POSTS_PER_COUNTRY";
+    public static final String GET_ALL_POSTS = "jpa.Post.GET_ALL_POSTS";
+    public static final String GET_TOTAL_POSTS = "jpa.Post.TOTAL_POSTS";
+    public static final String GET_TOTAL_POSTS_PER_COUNTRY = "jpa.Post.POSTS_PER_COUNTRY";
 
 
     @Id

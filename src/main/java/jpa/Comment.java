@@ -1,4 +1,8 @@
+package jpa;
+
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.List;
 
 @Entity
@@ -8,7 +12,10 @@ public class Comment {
     @GeneratedValue
     private Long id;
 
+    @NotNull
+    @Size(min = 1, max = 1024)
     private String text;
+
     private int upVotes;
     private int downVotes;
 
@@ -17,8 +24,9 @@ public class Comment {
     private Post post;
 
     // Many comments can belong to one user
+    @NotNull
     @ManyToOne
-    private User user;
+    private User author;
 
     // A comment can have one or more comments
     @OneToMany(cascade = CascadeType.ALL)
@@ -44,9 +52,9 @@ public class Comment {
 
     public void setDownVotes(int downVotes) { this.downVotes = downVotes; }
 
-    public User getUser() { return user; }
+    public User getAuthor() { return author; }
 
-    public void setUser(User user) { this.user = user; }
+    public void setAuthor(User user) { this.author = user; }
 
     public void setPost(Post post) { this.post = post; }
 

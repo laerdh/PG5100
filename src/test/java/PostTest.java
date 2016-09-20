@@ -1,3 +1,6 @@
+import jpa.Comment;
+import jpa.Post;
+import jpa.User;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -8,8 +11,6 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -49,11 +50,9 @@ public class PostTest {
 
     @Test
     public void testCreatePostWithData() throws Exception {
-        User user = getValidUser();
+        User user = TestDataProvider.getValidUser();
 
-        Post post = new Post();
-        post.setText("Test post");
-        post.setCreatedAt(new Date());
+        Post post = TestDataProvider.getValidPost();
         post.setAuthor(user);
 
         assertFalse(hasViolations(post));
@@ -62,15 +61,13 @@ public class PostTest {
 
     @Test
     public void testCreateSeveralPosts() throws Exception {
-        User user = getValidUser();
+        User user = TestDataProvider.getValidUser();
         int nbOfPosts = 5;
 
         assertTrue(persistInTransaction(user));
 
         for (int i = 0; i < nbOfPosts; i++) {
-            Post post = new Post();
-            post.setText("Test post " + i);
-            post.setCreatedAt(new Date());
+            Post post = TestDataProvider.getValidPost();
             post.setAuthor(user);
 
             assertTrue(persistInTransaction(post));
@@ -85,26 +82,23 @@ public class PostTest {
 
     @Test
     public void testAddPostToUser() throws Exception {
-        User user = getValidUser();
+        User user = TestDataProvider.getValidUser();
 
-        Post post = new Post();
-        post.setText("Test post");
-        post.setCreatedAt(new Date());
+        Post post = TestDataProvider.getValidPost();
         post.setAuthor(user);
-
 
         assertTrue(persistInTransaction(user, post));
     }
 
     @Test
     public void testAddEmptyComment() throws Exception {
-        User user = getValidUser();
+        User user = TestDataProvider.getValidUser();
 
-        Post post = new Post();
-        post.setText("Test post");
+        Post post = TestDataProvider.getValidPost();
         post.setAuthor(user);
 
-        Comment comment = new Comment();
+        Comment comment = TestDataProvider.getValidComment();
+        comment.setAuthor(user);
 
         post.setComments(new ArrayList<>());
         post.getComments().add(comment);
@@ -116,13 +110,12 @@ public class PostTest {
     @Test
     public void testAddComment() throws Exception {
         // Arrange
-        User user = getValidUser();
-        Post post = new Post();
-        post.setText("This is a test");
+        User user = TestDataProvider.getValidUser();
+        Post post = TestDataProvider.getValidPost();
         post.setAuthor(user);
 
-        Comment comment = new Comment();
-        comment.setText("This is a comment");
+        Comment comment = TestDataProvider.getValidComment();
+        comment.setAuthor(user);
 
         post.setComments(new ArrayList<>());
         post.getComments().add(comment);
@@ -140,18 +133,16 @@ public class PostTest {
 
     @Test
     public void testAddSeveralComments() throws Exception {
-        User user = getValidUser();
-        Post post = new Post();
-        post.setText("Test post");
+        User user = TestDataProvider.getValidUser();
+        Post post = TestDataProvider.getValidPost();
         post.setAuthor(user);
 
         List<Comment> comments = new ArrayList<>();
         int nbOfComments = 5;
 
         for (int i = 0; i < nbOfComments; i++) {
-            Comment comment = new Comment();
-            comment.setText("This is comment #" + i);
-
+            Comment comment = TestDataProvider.getValidComment();
+            comment.setAuthor(user);
             comments.add(comment);
         }
 
@@ -164,13 +155,12 @@ public class PostTest {
         assertEquals(postFound.getComments().size(), nbOfComments);
     }
 
-    // Tests for named queries
-
     @Test
     public void testShouldGetAllPosts() throws Exception {
         int nbOfPosts = 20;
-        User user = getValidUser();
-        List<Post> posts = getCollection(nbOfPosts, Post.class);
+        User user = TestDataProvider.getValidUser();
+
+        List<Post> posts = TestDataProvider.getCollection(nbOfPosts, Post.class);
 
         assertTrue(persistInTransaction(user));
 
@@ -190,8 +180,8 @@ public class PostTest {
     public void testShouldGetTotalPosts() throws Exception {
         // Arrange
         int nbOfPosts = 20;
-        User user = getValidUser();
-        List<Post> posts = getCollection(nbOfPosts, Post.class);
+        User user = TestDataProvider.getValidUser();
+        List<Post> posts = TestDataProvider.getCollection(nbOfPosts, Post.class);
 
         assertTrue(persistInTransaction(user));
 
@@ -214,20 +204,20 @@ public class PostTest {
     @Test
     public void testShouldGetTotalPostsPerCountry() throws Exception {
         // Arrange
-        User user1 = getValidUser();
+        User user1 = TestDataProvider.getValidUser();
         user1.getAddress().setCountry("Norway");
-        User user2 = getValidUser();
+        User user2 = TestDataProvider.getValidUser();
         user2.getAddress().setCountry("Sweden");
 
-        Post p1 = new Post();
+        Post p1 = TestDataProvider.getValidPost();
         p1.setText("Test post 1");
         p1.setAuthor(user1);
 
-        Post p2 = new Post();
+        Post p2 = TestDataProvider.getValidPost();
         p2.setText("Test post 2");
         p2.setAuthor(user1);
 
-        Post p3 = new Post();
+        Post p3 = TestDataProvider.getValidPost();
         p3.setText("Test post 3");
         p3.setAuthor(user2);
 
@@ -244,8 +234,6 @@ public class PostTest {
         assertEquals(2, count.intValue());
     }
 
-    // Helper methods
-
     private boolean persistInTransaction(Object... obj) {
         EntityTransaction tx = em.getTransaction();
         tx.begin();
@@ -261,19 +249,6 @@ public class PostTest {
         return true;
     }
 
-    private <T> List<T> getCollection(int size, Class<T> type) {
-        List<T> data = new ArrayList<T>();
-
-        for (int i = 0; i < size; i++) {
-            try {
-                data.add(type.newInstance());
-            } catch (InstantiationException | IllegalAccessException e) {
-
-            }
-        }
-        return data;
-    }
-
     private <T> boolean hasViolations(T obj) {
         Set<ConstraintViolation<T>> violations = validator.validate(obj);
 
@@ -282,18 +257,5 @@ public class PostTest {
         }
 
         return violations.size() > 0;
-    }
-
-    private User getValidUser() {
-        User user = new User();
-        user.setName("Test");
-        user.setSurname("Tester");
-        user.setEmail("test@test.com");
-        user.setDateOfRegistration(Date.from(
-                LocalDate.of(2010,1,1).atStartOfDay(ZoneId.systemDefault()).toInstant()));
-
-        user.setAddress(new Address());
-
-        return user;
     }
 }
