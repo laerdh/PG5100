@@ -52,9 +52,7 @@ public class Post {
     private Date updatedAt;
 
 
-    public Post(){
-        createdAt = new Date();
-    }
+    public Post(){}
 
 
     public Long getId() { return id; }

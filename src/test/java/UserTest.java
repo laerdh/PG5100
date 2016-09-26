@@ -1,8 +1,10 @@
+import jpa.Address;
 import jpa.Comment;
 import jpa.Post;
 import jpa.User;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.persistence.*;
@@ -10,7 +12,6 @@ import javax.validation.*;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -18,8 +19,10 @@ import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
 
+
+@Ignore
 public class UserTest {
-    private EntityManagerFactory factory = Persistence.createEntityManagerFactory("DB");
+    private EntityManagerFactory factory = Persistence.createEntityManagerFactory("DB-Test");
     private EntityManager em;
 
     private ValidatorFactory valFactory;
@@ -147,9 +150,7 @@ public class UserTest {
     public void testUserAddPost() throws Exception {
         User user = TestDataProvider.getValidUser();
 
-        Post post = new Post();
-        post.setText("This post is for test-purposes");
-        post.setCreatedAt(new Date());
+        Post post = TestDataProvider.getValidPost();
         post.setAuthor(user);
 
         assertTrue(persistInTransaction(user, post));
@@ -164,9 +165,7 @@ public class UserTest {
 
         int nbOfPost = 5;
         for (int i = 0; i < nbOfPost; i++) {
-            Post post = new Post();
-            post.setText("Post" + i + " - for test-purposes");
-            post.setCreatedAt(new Date());
+            Post post = TestDataProvider.getValidPost();
             post.setAuthor(user);
 
             assertTrue(persistInTransaction(post));

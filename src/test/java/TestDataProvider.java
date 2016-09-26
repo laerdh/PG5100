@@ -2,6 +2,7 @@ import jpa.Address;
 import jpa.Comment;
 import jpa.Post;
 import jpa.User;
+import org.junit.Ignore;
 
 import java.sql.Date;
 import java.time.LocalDate;
@@ -9,6 +10,8 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
+
+@Ignore
 public class TestDataProvider {
     // jpa.User settings
     private static final String TESTER_NAME = "Tester";
@@ -36,6 +39,7 @@ public class TestDataProvider {
 
     static Post getValidPost() {
         Post post = new Post();
+        post.setCreatedAt(Date.from(LocalDate.of(2010, 1, 1).atStartOfDay(ZoneId.systemDefault()).toInstant()));
         post.setText(POST_TEXT);
 
         return post;

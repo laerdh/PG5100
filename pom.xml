@@ -7,6 +7,7 @@
     <groupId>no.westerdals.pg5100</groupId>
     <artifactId>exercise</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <packaging>war</packaging>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -31,13 +32,15 @@
         </dependency>
         <dependency>
             <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-java8</artifactId>
+            <artifactId>hibernate-entitymanager</artifactId>
             <version>5.2.2.Final</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-validator</artifactId>
             <version>${hibernate.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.h2database</groupId>
@@ -48,6 +51,7 @@
             <groupId>org.jboss.arquillian</groupId>
             <artifactId>arquillian-bom</artifactId>
             <version>1.1.11.Final</version>
+            <type>pom</type>
         </dependency>
         <dependency>
             <groupId>org.wildfly.arquillian</groupId>
@@ -55,6 +59,13 @@
             <version>1.1.0.Final</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.jboss.arquillian.junit</groupId>
+            <artifactId>arquillian-junit-container</artifactId>
+            <version>1.1.11.Final</version>
+            <scope>test</scope>
+        </dependency>
+
 
 
         <!-- test -->
@@ -95,9 +106,9 @@
 
             <!-- Used to download and unpack JBoss/Wildfly automatically before running the tests-->
             <plugin>
-                <groupId>org.apache.maven-plugins</groupId>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
-                <execution>
+                <executions>
                     <execution>
                         <id>unpack</id>
                         <phase>process-test-classes</phase>
@@ -117,7 +128,7 @@
                             </artifactItems>
                         </configuration>
                     </execution>
-                </execution>
+                </executions>
             </plugin>
 
             <!--
