@@ -21,7 +21,7 @@ public class UserEJB {
     public UserEJB() {}
 
 
-    public User registerNewUser(String name, String surname, @NotNull String email) {
+    public Long registerNewUser(String name, String surname, @NotNull String email) {
         if (isRegistered(email)) {
             return null;
         }
@@ -33,7 +33,7 @@ public class UserEJB {
         user.setDateOfRegistration(new Date());
 
         em.persist(user);
-        return user;
+        return user.getId();
     }
 
     public boolean isRegistered(@NotNull String email) {
