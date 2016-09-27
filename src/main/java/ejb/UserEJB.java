@@ -1,6 +1,7 @@
 package ejb;
 
-import jpa.User;
+import entity.Post;
+import entity.User;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -9,6 +10,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
+import java.util.List;
 
 @Stateless
 public class UserEJB {
@@ -36,6 +38,30 @@ public class UserEJB {
         return user.getId();
     }
 
+    public boolean createPost(long userId, String text) {
+        User u = em.find(User.class, userId);
+
+        if (u != null) {
+            Post post = new Post();
+            post.setText(text);
+            post.setCreatedAt(new Date());
+
+            u.getPosts().add(post);
+
+            em.persist(post);
+            return true;
+        }
+        return false;
+    }
+
+    public int getTotalPosts(long userId) {
+        Query query = em.createQuery("select u.posts.size from User u where u.id = :userId");
+        query.setParameter("userId", userId);
+        int n = (int) query.getSingleResult();
+
+        return n;
+    }
+
     public boolean isRegistered(@NotNull String email) {
         Query query = em.createQuery("select u from User u where u.email = :email");
         query.setParameter("email", email);
@@ -55,5 +81,12 @@ public class UserEJB {
         long n = (Long) query.getSingleResult();
 
         return n;
+    }
+
+    public List<String> getUserCountries() {
+        Query query = em.createNamedQuery(User.GET_USER_COUNTRIES);
+        List<String> data = query.getResultList();
+
+        return data;
     }
 }

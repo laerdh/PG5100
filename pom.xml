@@ -65,7 +65,12 @@
             <version>1.1.11.Final</version>
             <scope>test</scope>
         </dependency>
-
+        <!-- https://mvnrepository.com/artifact/org.jboss.arquillian.extension/arquillian-persistence-impl -->
+        <dependency>
+            <groupId>org.jboss.arquillian.extension</groupId>
+            <artifactId>arquillian-persistence-impl</artifactId>
+            <version>1.0.0.Alpha6</version>
+        </dependency>
 
 
         <!-- test -->

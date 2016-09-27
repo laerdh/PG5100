@@ -1,6 +1,5 @@
-import jpa.Comment;
-import jpa.Post;
-import jpa.User;
+package entity;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -13,7 +12,6 @@ import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -56,7 +54,6 @@ public class PostTest {
         User user = TestDataProvider.getValidUser();
 
         Post post = TestDataProvider.getValidPost();
-        post.setAuthor(user);
 
         assertFalse(hasViolations(post));
         assertTrue(persistInTransaction(user, post));
@@ -71,7 +68,6 @@ public class PostTest {
 
         for (int i = 0; i < nbOfPosts; i++) {
             Post post = TestDataProvider.getValidPost();
-            post.setAuthor(user);
 
             assertTrue(persistInTransaction(post));
         }
@@ -88,7 +84,6 @@ public class PostTest {
         User user = TestDataProvider.getValidUser();
 
         Post post = TestDataProvider.getValidPost();
-        post.setAuthor(user);
 
         assertTrue(persistInTransaction(user, post));
     }
@@ -98,7 +93,6 @@ public class PostTest {
         User user = TestDataProvider.getValidUser();
 
         Post post = TestDataProvider.getValidPost();
-        post.setAuthor(user);
 
         Comment comment = TestDataProvider.getValidComment();
         comment.setAuthor(user);
@@ -115,7 +109,6 @@ public class PostTest {
         // Arrange
         User user = TestDataProvider.getValidUser();
         Post post = TestDataProvider.getValidPost();
-        post.setAuthor(user);
 
         Comment comment = TestDataProvider.getValidComment();
         comment.setAuthor(user);
@@ -138,7 +131,6 @@ public class PostTest {
     public void testAddSeveralComments() throws Exception {
         User user = TestDataProvider.getValidUser();
         Post post = TestDataProvider.getValidPost();
-        post.setAuthor(user);
 
         List<Comment> comments = new ArrayList<>();
         int nbOfComments = 5;
@@ -169,7 +161,6 @@ public class PostTest {
 
         for (Post p : posts) {
             p.setText("Test post");
-            p.setAuthor(user);
             assertTrue(persistInTransaction(p));
         }
 
@@ -190,7 +181,6 @@ public class PostTest {
 
         for (Post p : posts) {
             p.setText("Test post");
-            p.setAuthor(user);
             assertTrue(persistInTransaction(p));
         }
 
@@ -202,39 +192,6 @@ public class PostTest {
 
         // Assert
         assertEquals(countPosts.intValue(), nbOfPosts);
-    }
-
-    @Test
-    public void testShouldGetTotalPostsPerCountry() throws Exception {
-        // Arrange
-        User user1 = TestDataProvider.getValidUser();
-        user1.getAddress().setCountry("Norway");
-        User user2 = TestDataProvider.getValidUser();
-        user2.getAddress().setCountry("Sweden");
-
-        Post p1 = TestDataProvider.getValidPost();
-        p1.setText("Test post 1");
-        p1.setAuthor(user1);
-
-        Post p2 = TestDataProvider.getValidPost();
-        p2.setText("Test post 2");
-        p2.setAuthor(user1);
-
-        Post p3 = TestDataProvider.getValidPost();
-        p3.setText("Test post 3");
-        p3.setAuthor(user2);
-
-        assertTrue(persistInTransaction(user1, user2, p1, p2, p3));
-
-
-        // Act
-        Query query = em.createNamedQuery(Post.GET_TOTAL_POSTS_PER_COUNTRY);
-        query.setParameter("country", "Norway");
-        Long count = (long) query.getSingleResult();
-
-
-        // Assert
-        assertEquals(2, count.intValue());
     }
 
     private boolean persistInTransaction(Object... obj) {

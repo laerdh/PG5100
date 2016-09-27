@@ -1,4 +1,4 @@
-package jpa;
+package entity;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -20,6 +20,10 @@ import java.util.List;
                 "select distinct u.address.country from User u"),
         @NamedQuery(name = User.GET_TOTAL_USERS_PER_COUNTRY, query =
                 "select count(u) from User u where u.address.country = :country"),
+        @NamedQuery(name = User.GET_TOTAL_POSTS, query =
+                "select u.posts.size from User u where u.id = :userId"),
+        @NamedQuery(name = User.GET_TOTAL_COMMENTS, query =
+                "select u.comments.size from User u where u.id = :userId"),
         @NamedQuery(name = User.TOP_X_POSTERS, query =
                 "select u from User u order by u.posts.size desc"),
         @NamedQuery(name = User.TOP_X_COMMENTERS, query =
@@ -28,12 +32,14 @@ import java.util.List;
 public class User {
 
     // Constants for named queries names
-    public static final String GET_ALL_USERS = "jpa.User.GET_ALL_USERS";
-    public static final String GET_TOTAL_USERS = "jpa.User.GET_TOTAL_USERS";
-    public static final String GET_USER_COUNTRIES = "jpa.User.GET_USER_COUNTRIES";
-    public static final String GET_TOTAL_USERS_PER_COUNTRY = "jpa.User.POSTS_PER_COUNTRY";
-    public static final String TOP_X_POSTERS = "jpa.User.TOP_POSTERS";
-    public static final String TOP_X_COMMENTERS = "jpa.User.TOP_COMMENTERS";
+    public static final String GET_ALL_USERS = "entity.User.GET_ALL_USERS";
+    public static final String GET_TOTAL_USERS = "entity.User.GET_TOTAL_USERS";
+    public static final String GET_USER_COUNTRIES = "entity.User.GET_USER_COUNTRIES";
+    public static final String GET_TOTAL_USERS_PER_COUNTRY = "entity.User.POSTS_PER_COUNTRY";
+    public static final String GET_TOTAL_POSTS = "entity.User.TOTAL_POSTS";
+    public static final String GET_TOTAL_COMMENTS = "entity.User.TOTAL_COMMENTS";
+    public static final String TOP_X_POSTERS = "entity.User.TOP_POSTERS";
+    public static final String TOP_X_COMMENTERS = "entity.User.TOP_COMMENTERS";
 
 
     @Id @GeneratedValue
@@ -57,16 +63,16 @@ public class User {
     @Temporal(TemporalType.DATE)
     private Date dateOfRegistration;
 
-    // jpa.User only have one address
-    @OneToOne(cascade = CascadeType.ALL)
+    // entity.User only have one address
+    @OneToOne(orphanRemoval = true)
     private Address address;
 
-    // jpa.User can have many posts
-    @OneToMany(cascade = CascadeType.ALL)
+    // entity.User can have many posts
+    @OneToMany
     private List<Post> posts;
 
-    // jpa.User can have many comments
-    @OneToMany
+    // entity.User can have many comments
+    @OneToMany(orphanRemoval = true)
     private List<Comment> comments;
 
 

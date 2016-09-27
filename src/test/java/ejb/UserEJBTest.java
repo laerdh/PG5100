@@ -1,20 +1,17 @@
 package ejb;
 
-import jpa.Address;
-import jpa.Comment;
-import jpa.Post;
-import jpa.User;
+import entity.*;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.arquillian.test.spi.ArquillianProxyException;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import javax.ejb.EJB;
 import javax.ejb.EJBException;
-import javax.validation.ConstraintViolationException;
 
 import static org.junit.Assert.*;
 
@@ -22,15 +19,33 @@ import static org.junit.Assert.*;
 @RunWith(Arquillian.class)
 public class UserEJBTest {
 
+    private static final String USER_NAME = "Test";
+    private static final String USER_SURNAME = "Test";
+    private static final String USER_EMAIL = "test@test.com";
+
     @Deployment
     public static JavaArchive createDeployment() {
         return ShrinkWrap.create(JavaArchive.class)
-                .addClasses(User.class, UserEJB.class, Address.class, Post.class, Comment.class)
+                .addPackages(true, UserEJB.class.getPackage())
+                .addPackages(true, User.class.getPackage())
+                .addPackages(true, UserEJBTest.class.getPackage())
+                .addPackages(true, UserTest.class.getPackage())
                 .addAsResource("META-INF/persistence.xml");
     }
 
     @EJB
     private UserEJB user;
+
+    @EJB
+    private DeleterEJB deleter;
+
+
+    @Before
+    @After
+    public void emptyDatabase() throws Exception {
+        deleter.deleteEntities(User.class);
+        deleter.deleteEntities(Post.class);
+    }
 
     @Test
     public void testRegisterEmptyUser() throws Exception {
@@ -38,35 +53,51 @@ public class UserEJBTest {
             Long id = user.registerNewUser(null, null, null);
             fail();
         } catch (EJBException e) {
-
             // Unwrap exception and make sure it is an
             // ConstraintViolationException
-            assertTrue(isConstraintViolationException(e));
+            assertTrue(isConstraintViolation(e));
         }
     }
 
     @Test
     public void testRegisterNewUser() throws Exception {
-        String name = "Test";
-        String surname = "Test";
-        String email = "test@test.com";
-
-        Long id = user.registerNewUser(name, surname, email);
+        Long id = user.registerNewUser(USER_NAME, USER_SURNAME, USER_EMAIL);
 
         assertNotNull(id);
     }
 
     @Test
     public void isRegistered() throws Exception {
-        String name = "Test";
-        String surname = "Test";
-        String email = "t@t.com";
+        assertFalse(user.isRegistered(USER_EMAIL));
 
-        assertFalse(user.isRegistered(email));
+        Long id = user.registerNewUser(USER_NAME, USER_SURNAME, USER_EMAIL);
+        assertNotNull(id);
 
-        Long id = user.registerNewUser(name, surname, email);
+        assertTrue(user.isRegistered(USER_EMAIL));
+    }
 
-        assertTrue(user.isRegistered(email));
+    @Test
+    public void testUserCreatesEmptyPost() throws Exception {
+        Long id = user.registerNewUser(USER_NAME, USER_SURNAME, USER_EMAIL);
+        assertNotNull(id);
+
+        String text = "";
+        try {
+            user.createPost(id, text);
+            fail();
+        } catch (Exception e) {
+            // Find exceptiontype
+        }
+    }
+
+    @Test
+    public void testUserCreatesPost() throws Exception {
+        Long id = user.registerNewUser(USER_NAME, USER_SURNAME, USER_EMAIL);
+        assertNotNull(id);
+
+        String text = "This is a test-message";
+
+        assertTrue(user.createPost(id, text));
     }
 
     @Test
@@ -87,8 +118,20 @@ public class UserEJBTest {
         assertEquals(expected, user.getNumberOfUsers());
     }
 
-    private boolean isConstraintViolationException(Exception ex) {
-        return ex.getCause() instanceof javax.validation.ConstraintViolationException;
+    @Test
+    public void getTotalPosts() throws Exception {
+        Long id = user.registerNewUser(USER_NAME, USER_SURNAME, USER_EMAIL);
+        assertNotNull(id);
+
+        long nbOfPosts = user.getTotalPosts(id);
+
+        String text = "This is a test-message";
+        assertTrue(user.createPost(id, text));
+
+        assertEquals(nbOfPosts + 1, user.getTotalPosts(id));
     }
 
+    private boolean isConstraintViolation(Exception ex) {
+        return ex.getCause() instanceof javax.validation.ConstraintViolationException;
+    }
 }

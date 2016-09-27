@@ -1,4 +1,4 @@
-package jpa;
+package entity;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -12,16 +12,13 @@ import java.util.List;
         @NamedQuery(name = Post.GET_ALL_POSTS, query =
                 "select p from Post p"),
         @NamedQuery(name = Post.GET_TOTAL_POSTS, query =
-                "select count(p) from Post p"),
-        @NamedQuery(name = Post.GET_TOTAL_POSTS_PER_COUNTRY, query =
-                "select count(p) from Post p where p.author.address.country = :country")
+                "select count(p) from Post p")
 })
 public class Post {
 
     // Constants for named queries names
-    public static final String GET_ALL_POSTS = "jpa.Post.GET_ALL_POSTS";
-    public static final String GET_TOTAL_POSTS = "jpa.Post.TOTAL_POSTS";
-    public static final String GET_TOTAL_POSTS_PER_COUNTRY = "jpa.Post.POSTS_PER_COUNTRY";
+    public static final String GET_ALL_POSTS = "entity.Post.GET_ALL_POSTS";
+    public static final String GET_TOTAL_POSTS = "entity.Post.TOTAL_POSTS";
 
 
     @Id
@@ -35,13 +32,8 @@ public class Post {
     private int upVotes;
     private int downVotes;
 
-    // Many posts can belong to an author
-    @NotNull
-    @ManyToOne
-    private User author;
-
     // One post can have many comments
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(orphanRemoval = true)
     private List<Comment> comments;
 
     @Past
@@ -58,10 +50,6 @@ public class Post {
     public Long getId() { return id; }
 
     public void setId(Long id) { this.id = id; }
-
-    public User getAuthor() { return author; }
-
-    public void setAuthor(User author) { this.author = author; }
 
     public String getText() { return text; }
 

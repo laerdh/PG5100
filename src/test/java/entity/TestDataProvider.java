@@ -1,7 +1,9 @@
-import jpa.Address;
-import jpa.Comment;
-import jpa.Post;
-import jpa.User;
+package entity;
+
+import entity.Address;
+import entity.Comment;
+import entity.Post;
+import entity.User;
 import org.junit.Ignore;
 
 import java.sql.Date;
@@ -13,15 +15,15 @@ import java.util.List;
 
 @Ignore
 public class TestDataProvider {
-    // jpa.User settings
+    // entity.User settings
     private static final String TESTER_NAME = "Tester";
     private static final String TESTER_SURNAME = "Test";
     private static final String TESTER_EMAIL = "test@test.com";
 
-    // jpa.Post settings
+    // entity.Post settings
     private static final String POST_TEXT = "Test post";
 
-    // jpa.Comment settings
+    // entity.Comment settings
     private static final String COMMENT_TEXT = "Test comment";
 
 

@@ -1,7 +1,5 @@
-import jpa.Address;
-import jpa.Comment;
-import jpa.Post;
-import jpa.User;
+package entity;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -151,7 +149,7 @@ public class UserTest {
         User user = TestDataProvider.getValidUser();
 
         Post post = TestDataProvider.getValidPost();
-        post.setAuthor(user);
+        user.getPosts().add(post);
 
         assertTrue(persistInTransaction(user, post));
     }
@@ -166,7 +164,7 @@ public class UserTest {
         int nbOfPost = 5;
         for (int i = 0; i < nbOfPost; i++) {
             Post post = TestDataProvider.getValidPost();
-            post.setAuthor(user);
+            user.getPosts().add(post);
 
             assertTrue(persistInTransaction(post));
         }
@@ -281,13 +279,11 @@ public class UserTest {
 
         List<Post> user1Posts = TestDataProvider.getCollection(10, Post.class)
                 .stream()
-                .peek(p -> p.setAuthor(user1))
                 .peek(p -> p.setText("Test post"))
                 .collect(Collectors.toList());
 
         List<Post> user2Posts = TestDataProvider.getCollection(50, Post.class)
                 .stream()
-                .peek(p -> p.setAuthor(user2))
                 .peek(p -> p.setText("Test post2"))
                 .collect(Collectors.toList());
 
@@ -325,13 +321,11 @@ public class UserTest {
         List<Comment> user1Comments = TestDataProvider.getCollection(500, Comment.class)
                 .stream()
                 .peek(c -> c.setText("Test comment"))
-                .peek(c -> c.setAuthor(user1))
                 .collect(Collectors.toList());
 
         List<Comment> user2Comments = TestDataProvider.getCollection(100, Comment.class)
                 .stream()
                 .peek(c -> c.setText("Test comment2"))
-                .peek(c -> c.setAuthor(user2))
                 .collect(Collectors.toList());
 
         persistListInTransaction(user1Comments);
