@@ -14,6 +14,8 @@ import javax.ejb.EJB;
 import javax.ejb.EJBException;
 import javax.validation.ConstraintViolationException;
 
+import java.util.List;
+
 import static org.junit.Assert.*;
 
 @RunWith(Arquillian.class)
@@ -148,6 +150,31 @@ public class UserEJBTest {
     @Test
     public void testGetTotalUsersWhenNone() throws Exception {
         assertEquals(0, user.getNumberOfUsers());
+    }
+
+    @Test
+    public void testGetTopPosters() throws Exception {
+        User u1 = user.create("U1", "U1", "U1@test.com");
+        User u2 = user.create("U2", "U2", "U2@test.com");
+        User u3 = user.create("U3", "U3", "U3@test.com");
+        User u4 = user.create("U4", "U4", "U4@test.com");
+
+        String text = "Testpost";
+        Post p1 = post.create(u1, text);
+        Post p2 = post.create(u2, text);
+        Post p3 = post.create(u2, text);
+        Post p4 = post.create(u3, text);
+        Post p5 = post.create(u3, text);
+        Post p6 = post.create(u3, text);
+
+        List<User> topPosters = user.getTopPosters(4);
+        assertNotNull(topPosters);
+
+        long first = topPosters.get(0).getId();
+        long last = topPosters.get(topPosters.size() - 1).getId();
+
+        assertEquals((long) u3.getId(), first);
+        assertEquals((long) u4.getId(), last);
     }
 
     private boolean isConstraintViolation(Exception ex) {

@@ -9,6 +9,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
+import java.util.List;
 
 @Stateless
 public class UserEJB {
@@ -72,5 +73,29 @@ public class UserEJB {
 
         return n;
     }
+
+    public List<User> getTopPosters(int limit) {
+        Query query = em.createNamedQuery(User.TOP_X_POSTERS);
+        query.setMaxResults(limit);
+
+        return query.getResultList();
+    }
+
+    public List<User> getTopCommenters(int limit) {
+        Query query = em.createNamedQuery(User.TOP_X_COMMENTERS);
+        query.setMaxResults(limit);
+
+        return query.getResultList();
+    }
+
+    public long getTotalUsersByCountry(String country) {
+        Query query = em.createNamedQuery(User.GET_TOTAL_USERS_PER_COUNTRY);
+        query.setParameter("country", country);
+        long n = (Long) query.getSingleResult();
+
+        return n;
+    }
+
+
 
 }
