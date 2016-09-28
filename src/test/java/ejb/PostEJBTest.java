@@ -13,8 +13,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import javax.ejb.EJB;
+import javax.ejb.EJBException;
 import javax.ejb.EJBTransactionRolledbackException;
 import javax.validation.ConstraintViolationException;
+
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -54,7 +57,7 @@ public class PostEJBTest {
     }
 
     @Test
-    public void createValidPost() throws Exception {
+    public void testCreateValidPost() throws Exception {
         User u = user.create(USER_NAME, USER_SURNAME, USER_EMAIL);
         Post p = post.create(u, POST_TEXT);
 
@@ -62,11 +65,23 @@ public class PostEJBTest {
     }
 
     @Test
-    public void createNotValidPost() throws Exception {
+    public void testCreatePostWithNull() throws Exception {
         User u = user.create(USER_NAME, USER_SURNAME, USER_EMAIL);
 
         try {
             Post p = post.create(u, null);
+            fail("Should throw ConstraintViolationException");
+        } catch (EJBException e) {
+            assertTrue(isConstraintViolation(e));
+        }
+    }
+
+    @Test
+    public void testCreatPostWithEmptyString() throws Exception {
+        User u = user.create(USER_NAME, USER_SURNAME, USER_EMAIL);
+
+        try {
+            Post p = post.create(u, "");
             fail("Should throw ConstraintViolationException");
         } catch (EJBTransactionRolledbackException e) {
             assertTrue(isConstraintViolation(e));
@@ -74,20 +89,50 @@ public class PostEJBTest {
     }
 
     @Test
-    public void delete() throws Exception {
+    public void testDeletePost() throws Exception {
         User u = user.create(USER_NAME, USER_SURNAME, USER_EMAIL);
         Post p = post.create(u, POST_TEXT);
 
+        assertNotNull(p.getId());
+        long expected = 1;
+        long actual = post.delete(p.getId());
+
+        assertEquals(expected, actual);
     }
 
     @Test
-    public void getAllPosts() throws Exception {
+    public void testGetAllPosts() throws Exception {
+        int nbOfPosts = 5;
+        User u = user.create(USER_NAME, USER_SURNAME, USER_EMAIL);
 
+        for (int i = 0; i < nbOfPosts; i++) {
+            String text = "Post" + i;
+            Post p = post.create(u, text);
+        }
+
+        List<Post> posts = post.getAllPosts();
+
+        assertEquals(nbOfPosts, posts.size());
+    }
+
+    @Test
+    public void getAllPostsWhenNone() throws Exception {
+        List<Post> posts = post.getAllPosts();
+
+        assertEquals(0, posts.size());
     }
 
     @Test
     public void getTotalPosts() throws Exception {
+        int nbOfPosts = 5;
+        User u = user.create(USER_NAME, USER_SURNAME, USER_EMAIL);
 
+        for (int i = 0; i < nbOfPosts; i++) {
+            String text = "Post" + i;
+            Post p = post.create(u, text);
+        }
+
+        assertEquals(nbOfPosts, post.getTotalPosts());
     }
 
     private boolean isConstraintViolation(Exception ex) {

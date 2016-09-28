@@ -38,11 +38,11 @@ public class PostEJB {
         return null;
     }
 
-    public long delete(long postId) {
+    public Long delete(long postId) {
         Query query = em.createQuery("delete from Post p where p.id = :id");
         query.setParameter("id", postId);
 
-        return query.executeUpdate();
+        return (long) query.executeUpdate();
     }
 
     public List<Post> getAllPosts() {
@@ -50,8 +50,8 @@ public class PostEJB {
         return query.getResultList();
     }
 
-    public long getTotalPosts(long userId) {
+    public long getTotalPosts() {
         Query query = em.createNamedQuery(Post.GET_TOTAL_POSTS);
-        return query.getFirstResult();
+        return (Long) query.getSingleResult();
     }
 }

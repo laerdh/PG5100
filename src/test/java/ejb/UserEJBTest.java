@@ -11,10 +11,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import javax.ejb.EJB;
+import javax.ejb.EJBException;
 import javax.validation.ConstraintViolationException;
 
 import static org.junit.Assert.*;
-
 
 @RunWith(Arquillian.class)
 public class UserEJBTest {
@@ -54,8 +54,8 @@ public class UserEJBTest {
     public void testRegisterEmptyUser() throws Exception {
         try {
             User u = user.create(null, null, null);
-            // fail("Should throw ConstraintViolationException");
-        } catch (Exception e) {
+            fail("Should throw ConstraintViolationException");
+        } catch (EJBException e) {
             // Unwrap exception and make sure it is an
             // ConstraintViolationException
             assertTrue(isConstraintViolation(e));
