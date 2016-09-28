@@ -1,6 +1,5 @@
 package ejb;
 
-import entity.Post;
 import entity.User;
 
 import javax.ejb.Stateless;
@@ -10,7 +9,6 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
-import java.util.List;
 
 @Stateless
 public class UserEJB {
@@ -23,7 +21,7 @@ public class UserEJB {
     public UserEJB() {}
 
 
-    public Long registerNewUser(String name, String surname, @NotNull String email) {
+    public User create(String name, String surname, @NotNull String email) {
         if (isRegistered(email)) {
             return null;
         }
@@ -35,31 +33,15 @@ public class UserEJB {
         user.setDateOfRegistration(new Date());
 
         em.persist(user);
-        return user.getId();
+
+        return user;
     }
 
-    public boolean createPost(long userId, String text) {
-        User u = em.find(User.class, userId);
-
-        if (u != null) {
-            Post post = new Post();
-            post.setText(text);
-            post.setCreatedAt(new Date());
-
-            u.getPosts().add(post);
-
-            em.persist(post);
-            return true;
-        }
-        return false;
-    }
-
-    public int getTotalPosts(long userId) {
-        Query query = em.createQuery("select u.posts.size from User u where u.id = :userId");
+    public Long delete(long userId) {
+        Query query = em.createQuery("delete from User u where u.id = :userId");
         query.setParameter("userId", userId);
-        int n = (int) query.getSingleResult();
 
-        return n;
+        return (long) query.executeUpdate();
     }
 
     public boolean isRegistered(@NotNull String email) {
@@ -76,6 +58,14 @@ public class UserEJB {
         return user != null;
     }
 
+    public long getTotalPosts(long userId) {
+        Query query = em.createQuery("select count(p) from Post p where p.author.id = :author_id");
+        query.setParameter("author_id", userId);
+        long n = (Long) query.getSingleResult();
+
+        return n;
+    }
+
     public long getNumberOfUsers() {
         Query query = em.createNamedQuery(User.GET_TOTAL_USERS);
         long n = (Long) query.getSingleResult();
@@ -83,10 +73,4 @@ public class UserEJB {
         return n;
     }
 
-    public List<String> getUserCountries() {
-        Query query = em.createNamedQuery(User.GET_USER_COUNTRIES);
-        List<String> data = query.getResultList();
-
-        return data;
-    }
 }

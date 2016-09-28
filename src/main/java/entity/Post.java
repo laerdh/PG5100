@@ -32,6 +32,10 @@ public class Post {
     private int upVotes;
     private int downVotes;
 
+    @NotNull
+    @ManyToOne
+    private User author;
+
     // One post can have many comments
     @OneToMany(orphanRemoval = true)
     private List<Comment> comments;
@@ -54,6 +58,10 @@ public class Post {
     public String getText() { return text; }
 
     public void setText(String text) { this.text = text; }
+
+    public void setAuthor(User author) { this.author = author; }
+
+    public User getAuthor() { return author; }
 
     public Date getCreatedAt() { return createdAt; }
 

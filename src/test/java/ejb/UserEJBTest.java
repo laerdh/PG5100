@@ -11,7 +11,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import javax.ejb.EJB;
-import javax.ejb.EJBException;
+import javax.validation.ConstraintViolationException;
 
 import static org.junit.Assert.*;
 
@@ -37,6 +37,9 @@ public class UserEJBTest {
     private UserEJB user;
 
     @EJB
+    private PostEJB post;
+
+    @EJB
     private DeleterEJB deleter;
 
 
@@ -50,9 +53,9 @@ public class UserEJBTest {
     @Test
     public void testRegisterEmptyUser() throws Exception {
         try {
-            Long id = user.registerNewUser(null, null, null);
-            fail();
-        } catch (EJBException e) {
+            User u = user.create(null, null, null);
+            // fail("Should throw ConstraintViolationException");
+        } catch (Exception e) {
             // Unwrap exception and make sure it is an
             // ConstraintViolationException
             assertTrue(isConstraintViolation(e));
@@ -61,47 +64,34 @@ public class UserEJBTest {
 
     @Test
     public void testRegisterNewUser() throws Exception {
-        Long id = user.registerNewUser(USER_NAME, USER_SURNAME, USER_EMAIL);
+        User u = user.create(USER_NAME, USER_SURNAME, USER_EMAIL);
 
-        assertNotNull(id);
+        assertNotNull(u.getId());
     }
 
     @Test
-    public void isRegistered() throws Exception {
+    public void testIsRegistered() throws Exception {
         assertFalse(user.isRegistered(USER_EMAIL));
 
-        Long id = user.registerNewUser(USER_NAME, USER_SURNAME, USER_EMAIL);
-        assertNotNull(id);
+        User u = user.create(USER_NAME, USER_SURNAME, USER_EMAIL);
+        assertNotNull(u.getId());
 
         assertTrue(user.isRegistered(USER_EMAIL));
     }
 
     @Test
-    public void testUserCreatesEmptyPost() throws Exception {
-        Long id = user.registerNewUser(USER_NAME, USER_SURNAME, USER_EMAIL);
-        assertNotNull(id);
+    public void testDeleteUser() throws Exception {
+        User u = user.create(USER_NAME, USER_SURNAME, USER_EMAIL);
+        assertNotNull(u.getId());
 
-        String text = "";
-        try {
-            user.createPost(id, text);
-            fail();
-        } catch (Exception e) {
-            // Find exceptiontype
-        }
+        long expected = 1;
+        long actual = user.delete(u.getId());
+
+        assertEquals(expected, actual);
     }
 
     @Test
-    public void testUserCreatesPost() throws Exception {
-        Long id = user.registerNewUser(USER_NAME, USER_SURNAME, USER_EMAIL);
-        assertNotNull(id);
-
-        String text = "This is a test-message";
-
-        assertTrue(user.createPost(id, text));
-    }
-
-    @Test
-    public void getNumberOfUsers() throws Exception {
+    public void testGetNumberOfUsers() throws Exception {
         int nbOfUsers = 5;
         long currentUsers = user.getNumberOfUsers();
 
@@ -110,7 +100,7 @@ public class UserEJBTest {
             String surname = "Test" + i;
             String email = "test" + i + "@test.com";
 
-            user.registerNewUser(name, surname, email);
+            user.create(name, surname, email);
         }
 
         int expected = nbOfUsers + (int) currentUsers;
@@ -119,19 +109,53 @@ public class UserEJBTest {
     }
 
     @Test
-    public void getTotalPosts() throws Exception {
-        Long id = user.registerNewUser(USER_NAME, USER_SURNAME, USER_EMAIL);
-        assertNotNull(id);
+    public void testGetTotalPosts() throws Exception {
+        User u = user.create(USER_NAME, USER_SURNAME, USER_EMAIL);
+        assertNotNull(u.getId());
 
-        long nbOfPosts = user.getTotalPosts(id);
+        long nbOfPosts = user.getTotalPosts(u.getId());
 
         String text = "This is a test-message";
-        assertTrue(user.createPost(id, text));
+        Post p = post.create(u, text);
 
-        assertEquals(nbOfPosts + 1, user.getTotalPosts(id));
+        long expected = nbOfPosts + 1;
+        long actual = user.getTotalPosts(u.getId());
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testGetTotalPostsWhenNone() throws Exception {
+        User u = user.create(USER_NAME, USER_SURNAME, USER_EMAIL);
+        assertNotNull(u.getId());
+
+        long nbOfPosts = user.getTotalPosts(u.getId());
+
+        assertEquals(0, nbOfPosts);
+    }
+
+    @Test
+    public void testGetTotalUsers() throws Exception {
+        User u1 = user.create(USER_NAME, USER_SURNAME, USER_EMAIL);
+
+        long nbOfUsers = user.getNumberOfUsers();
+
+        User u2 = user.create(USER_NAME, USER_SURNAME, "unique@test.com");
+
+        assertEquals(nbOfUsers + 1, user.getNumberOfUsers());
+    }
+
+    @Test
+    public void testGetTotalUsersWhenNone() throws Exception {
+        assertEquals(0, user.getNumberOfUsers());
     }
 
     private boolean isConstraintViolation(Exception ex) {
-        return ex.getCause() instanceof javax.validation.ConstraintViolationException;
+        Throwable t = ex.getCause();
+
+        while((t != null) && !(t instanceof ConstraintViolationException)) {
+            t = t.getCause();
+        }
+        return t instanceof ConstraintViolationException;
     }
 }

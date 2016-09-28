@@ -1,5 +1,8 @@
 package entity;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Past;
@@ -68,11 +71,12 @@ public class User {
     private Address address;
 
     // entity.User can have many posts
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "author")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private List<Post> posts;
 
     // entity.User can have many comments
-    @OneToMany(orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL)
     private List<Comment> comments;
 
 
