@@ -1,5 +1,6 @@
 package ejb;
 
+import entity.Comment;
 import entity.Post;
 import entity.User;
 
@@ -47,6 +48,13 @@ public class PostEJB {
 
     public List<Post> getAllPosts() {
         Query query = em.createNamedQuery(Post.GET_ALL_POSTS);
+        return query.getResultList();
+    }
+
+    public List<Comment> getAllComments(long postId) {
+        Query query = em.createNamedQuery(Post.GET_ALL_POST_COMMENTS);
+        query.setParameter("postId", postId);
+
         return query.getResultList();
     }
 

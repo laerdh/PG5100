@@ -95,7 +95,4 @@ public class UserEJB {
 
         return n;
     }
-
-
-
 }

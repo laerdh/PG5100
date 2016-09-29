@@ -2,8 +2,8 @@ package entity;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Past;
 import javax.validation.constraints.Size;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -11,6 +11,8 @@ import java.util.List;
 @NamedQueries({
         @NamedQuery(name = Post.GET_ALL_POSTS, query =
                 "select p from Post p"),
+        @NamedQuery(name = Post.GET_ALL_POST_COMMENTS, query =
+                "select c from Comment c where c.post.id = :postId"),
         @NamedQuery(name = Post.GET_TOTAL_POSTS, query =
                 "select count(p) from Post p")
 })
@@ -18,6 +20,7 @@ public class Post {
 
     // Constants for named queries names
     public static final String GET_ALL_POSTS = "entity.Post.GET_ALL_POSTS";
+    public static final String GET_ALL_POST_COMMENTS = "entity.Post.GET_ALL_COMMENTS";
     public static final String GET_TOTAL_POSTS = "entity.Post.TOTAL_POSTS";
 
 
@@ -37,10 +40,9 @@ public class Post {
     private User author;
 
     // One post can have many comments
-    @OneToMany(orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL)
     private List<Comment> comments;
 
-    @Past
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
 
@@ -71,7 +73,12 @@ public class Post {
 
     public void setUpdatedAt(Date updatedAt) { this.updatedAt = updatedAt; }
 
-    public List<Comment> getComments() { return comments; }
+    public List<Comment> getComments() {
+        if (comments == null) {
+            return new ArrayList<>();
+        }
+        return comments;
+    }
 
     public void setComments(List<Comment> comments) { this.comments = comments; }
 

@@ -3,10 +3,20 @@ package entity;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@NamedQueries({
+    @NamedQuery(name = Comment.GET_ALL_COMMENTS, query =
+        "select c from Comment c"),
+    @NamedQuery(name = Comment.GET_COMMENTS_TO_COMMENTS, query =
+        "select c from Comment c where c.id = :commentId")
+})
 public class Comment {
+
+    public static final String GET_ALL_COMMENTS = "entity.Comment.GET_ALL_COMMENTS";
+    public static final String GET_COMMENTS_TO_COMMENTS = "entity.Comment.GET_COMMENTS_TO_COMMENTS";
 
     @Id
     @GeneratedValue
@@ -60,7 +70,12 @@ public class Comment {
 
     public Post getPost() { return post; }
 
-    public List<Comment> getComments() { return comments; }
+    public List<Comment> getComments() {
+        if (comments == null) {
+            return new ArrayList<>();
+        }
+        return comments;
+    }
 
     public void setComments(List<Comment> comments) { this.comments = comments; }
 }

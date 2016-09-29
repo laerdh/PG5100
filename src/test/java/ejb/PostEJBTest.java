@@ -1,5 +1,6 @@
 package ejb;
 
+import entity.Comment;
 import entity.Post;
 import entity.User;
 import entity.UserTest;
@@ -46,12 +47,16 @@ public class PostEJBTest {
     private UserEJB user;
 
     @EJB
+    private CommentEJB comment;
+
+    @EJB
     private DeleterEJB deleter;
 
 
     @Before
     @After
     public void emptyDatabase() throws Exception {
+        deleter.deleteEntities(Comment.class);
         deleter.deleteEntities(Post.class);
         deleter.deleteEntities(User.class);
     }
@@ -133,6 +138,30 @@ public class PostEJBTest {
         }
 
         assertEquals(nbOfPosts, post.getTotalPosts());
+    }
+
+    @Test
+    public void getAllComments() throws Exception {
+        int nbOfComments = 10;
+        User u = user.create(USER_NAME, USER_SURNAME, USER_EMAIL);
+        assertNotNull("USER IS NULL", u);
+
+        Post p = post.create(u, "Test post");
+        assertNotNull("POST IS NULL", p);
+
+        for (int i = 0; i < nbOfComments; i++) {
+            Comment c = comment.add(u, p, "Test comment");
+        }
+
+        List<Comment> actual = post.getAllComments(p.getId());
+        assertNotNull(actual);
+
+        assertEquals(nbOfComments, actual.size());
+
+        // Assert that all posts belongs to post
+        for (int i = 0; i < actual.size(); i++) {
+            assertEquals(p.getId(), actual.get(i).getPost().getId());
+        }
     }
 
     private boolean isConstraintViolation(Exception ex) {

@@ -177,6 +177,15 @@ public class UserEJBTest {
         assertEquals((long) u4.getId(), last);
     }
 
+    @Test
+    public void testGetTopCommenters() throws Exception {
+        User u1 = user.create("U1", "U1", "U1@test.com");
+        User u2 = user.create("U2", "U2", "U2@test.com");
+        User u3 = user.create("U3", "U3", "U3@test.com");
+
+        String text = "Testcomment";
+    }
+
     private boolean isConstraintViolation(Exception ex) {
         Throwable t = ex.getCause();
 
