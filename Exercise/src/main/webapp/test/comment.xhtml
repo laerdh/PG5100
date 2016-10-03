@@ -1,0 +1,38 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<!-- To use the special tags from JSF, we need to define a namespace, like "h" in this case for the
+     HTML tags specially handled by JSF-->
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+>
+
+<ui:composition template="../layout.xhtml">
+
+    <ui:define name="content">
+        <h:form id="form">
+            <!--
+                Here we group all these action triggering buttons inside the same form:
+                when one of them is clicked, the entire form is sent.
+                Clicking on a <h:commandButton> in the browser leads it to do a HTTP POST
+                toward the JEE server.
+
+                The "action" can be used to do operations on the backing beans on the server side.
+                In this case it works only because there is a @Named bean called "counterBean",
+                on which we do want that its method "increaseCounter" (for example) is called (note
+                the lack of parentheses in the method invocation declaration)
+            -->
+            <p>Write a comment:</p>
+            <h:inputText value="#{userEJB.comment}"/>
+            <h:commandButton value="Publish" id="searchBtnId" action="result"/>
+
+            <!--
+                Note: all of these tags have an "id": this will turn useful when writing test cases
+                with Selenium (so each tag can be easily identified and accessed)
+            -->
+        </h:form>
+    </ui:define>
+
+</ui:composition>
+</html>

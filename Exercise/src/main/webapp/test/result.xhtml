@@ -1,0 +1,24 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<!-- To use the special tags from JSF, we need to define a namespace, like "h" in this case for the
+     HTML tags specially handled by JSF-->
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+>
+
+<ui:composition template="../layout.xhtml">
+    <ui:define name="content">
+        <p>Your comment:</p>
+        <p>
+            <h:outputText value="#{userEJB.getComment()}"/>
+        </p>
+        <hr/>
+        <p>
+            Go <a href="comment.jsf">back</a>.
+        </p>
+    </ui:define>
+</ui:composition>
+
+</html>
