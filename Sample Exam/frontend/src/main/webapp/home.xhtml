@@ -1,0 +1,30 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+>
+
+
+<ui:composition template="layout.xhtml">
+
+    <ui:define name="content">
+        <!--
+            what is inside this "c:if" will be part of the final HTML only if the value of
+            "test" is true. Otherwise, the JSF Servlet will skip it.
+        -->
+        <h1>Event List Home Page</h1>
+        <hr/>
+
+        <h3>Future events</h3>
+        <p>No events yet :( Be the first to create one!</p>
+        <hr/>
+
+    </ui:define>
+
+</ui:composition>
+</html>

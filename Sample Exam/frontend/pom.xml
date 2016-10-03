@@ -2,15 +2,16 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>frontend</artifactId>
+    <packaging>war</packaging>
+
     <parent>
         <artifactId>eventlist-app</artifactId>
         <groupId>no.westerdals.pg5100</groupId>
         <version>1.0-SNAPSHOT</version>
     </parent>
-
-    <modelVersion>4.0.0</modelVersion>
-    <artifactId>frontend</artifactId>
-    <packaging>war</packaging>
 
     <dependencies>
         <dependency>
@@ -80,6 +81,7 @@
                 <groupId>org.wildfly.plugins</groupId>
                 <artifactId>wildfly-maven-plugin</artifactId>
                 <configuration>
+                    <skip>false</skip>
                     <!--
                         This is quite complex (ie Java Agents and bytecode instrumentantion on the fly)...
                         for now just copy&paste it.

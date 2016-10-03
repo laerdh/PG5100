@@ -260,6 +260,7 @@
                     <artifactId>wildfly-maven-plugin</artifactId>
                     <version>1.1.0.Alpha11</version>
                     <configuration>
+                        <skip>true</skip>
                         <!--
                             If jbossHome is not specified, this plugin will download it.
                             Here, we point to the same installation done for the unit tests

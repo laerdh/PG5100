@@ -1,0 +1,33 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html" xmlns:i="http://java.sun.com/jsf/composite"
+>
+<!--
+    Define a default layout, where pages have common header/footer text
+-->
+
+
+<h:head>
+    <title>
+        <ui:insert name="title">PG5100 Exam Example</ui:insert>
+    </title>
+</h:head>
+
+
+<h:body>
+
+    <p>PG5100 - Exam Example</p>
+    <hr/>
+
+
+    <p>
+        Not logged in
+        <h:button value="Log In" />
+    </p>
+
+    <ui:insert name="content">Default content</ui:insert>
+
+</h:body>
+</html>
