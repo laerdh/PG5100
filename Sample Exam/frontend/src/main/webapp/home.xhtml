@@ -13,15 +13,51 @@
 <ui:composition template="layout.xhtml">
 
     <ui:define name="content">
-        <!--
-            what is inside this "c:if" will be part of the final HTML only if the value of
-            "test" is true. Otherwise, the JSF Servlet will skip it.
-        -->
         <h1>Event List Home Page</h1>
         <hr/>
 
-        <h3>Future events</h3>
-        <p>No events yet :( Be the first to create one!</p>
+        <c:if test="#{loginController.isLoggedIn()}">
+            <h:button value="Create Event" outcome="newEvent"/>
+        </c:if>
+        <c:choose>
+            <c:when test="#{eventController.events.isEmpty()}">
+                <h:outputText value="No events yet :( Be the first to create one!"/>
+            </c:when>
+            <c:otherwise>
+                <h3>Future events</h3>
+                <h:dataTable value="#{eventController.events}" var="event">
+                    <h:column>
+                        <f:facet name="header">Event</f:facet>
+                        #{event.title}
+                    </h:column>
+
+                    <h:column>
+                        <f:facet name="header">Date</f:facet>
+                        #{event.eventDate}
+                    </h:column>
+
+                    <h:column>
+                        <f:facet name="header">Location</f:facet>
+                        #{event.location}
+                    </h:column>
+
+                    <h:column>
+                        <f:facet name="header">Country</f:facet>
+                        #{event.country}
+                    </h:column>
+
+                    <h:column>
+                        <f:facet name="header">Description</f:facet>
+                        #{event.description}
+                    </h:column>
+
+                    <h:column>
+                        <f:facet name="header">Participants</f:facet>
+                        #{event.attendants.size()}
+                    </h:column>
+                </h:dataTable>
+            </c:otherwise>
+        </c:choose>
         <hr/>
 
     </ui:define>

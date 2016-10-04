@@ -16,6 +16,7 @@ import javax.ejb.EJB;
 import javax.validation.ConstraintViolationException;
 
 import java.util.Date;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -57,24 +58,14 @@ public class EventEJBTest {
     public void testCreateEventWithEmptyDescription() throws Exception {
         String description = "";
 
-        try {
-            event.create("Birthday party", new Date(), "Oslo", "Norway", description);
-            fail("Should throw ConstraintViolationException");
-        } catch (Exception e) {
-            assertTrue(hasConstraintViolation(e));
-        }
+        assertNull(event.create("Birthday party", new Date(), "Oslo", "Norway", description));
     }
 
     @Test
     public void testCreateEventWithNullAsDescription() throws Exception {
         String description = null;
 
-        try {
-            event.create("Birthday party", new Date(), "Oslo", "Norway", description);
-            fail("Should throw ConstraintViolationException");
-        } catch (Exception e) {
-            assertTrue(hasConstraintViolation(e));
-        }
+        assertNull(event.create("Birthday party", new Date(), "Oslo", "Norway", description));
     }
 
     @Test
@@ -116,15 +107,5 @@ public class EventEJBTest {
 
         // Assert that attendants has increased by one
         assertEquals(attendants, 1);
-    }
-
-    private boolean hasConstraintViolation(Exception e) {
-        Throwable t = e.getCause();
-
-        while(t != null && !(t instanceof ConstraintViolationException)) {
-            t = t.getCause();
-        }
-
-        return t != null;
     }
 }

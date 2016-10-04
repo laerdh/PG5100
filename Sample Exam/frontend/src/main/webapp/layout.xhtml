@@ -20,8 +20,8 @@
     <hr/>
 
     <c:choose>
-        <c:when test="#{loginController.registeredUser != null}">
-            <h:outputLabel value="Hi #{loginController.registeredUser}!" />
+        <c:when test="#{loginController.isLoggedIn()}">
+            <h:outputLabel value="Hi #{loginController.registeredUser.firstName}!" />
             <h:button value="Log out" outcome="#{loginController.logOut()}" />
         </c:when>
         <c:otherwise>

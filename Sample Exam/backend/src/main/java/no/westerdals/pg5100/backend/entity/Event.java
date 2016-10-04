@@ -11,6 +11,8 @@ import java.util.List;
 @NamedQueries({
     @NamedQuery(name = Event.GET_ALL_EVENTS, query =
         "select e from Event e"),
+    @NamedQuery(name = Event.GET_EVENT, query =
+        "select e from Event e where e.id = :id"),
     @NamedQuery(name = Event.GET_ATTENDANTS, query =
         "select e.attendants.size from Event e where e.id = :id"),
     @NamedQuery(name = Event.GET_EVENTS_BY_COUNTRY, query =
@@ -19,6 +21,7 @@ import java.util.List;
 public class Event {
 
     public static final String GET_ALL_EVENTS = "Event.GET_ALL_EVENTS";
+    public static final String GET_EVENT = "Event.GET_EVENT";
     public static final String GET_ATTENDANTS = "Event.GET_ATTENDANTS";
     public static final String GET_EVENTS_BY_COUNTRY = "Event.GET_EVENTS_BY_COUNTRY";
 
@@ -43,7 +46,7 @@ public class Event {
     @Size(min = 2, max = 1024)
     private String description;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<User> attendants;
 
 

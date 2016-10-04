@@ -1,6 +1,7 @@
 package no.westerdals.pg5100.frontend.controller;
 
 import no.westerdals.pg5100.backend.ejb.UserEJB;
+import no.westerdals.pg5100.backend.entity.User;
 
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
@@ -14,10 +15,11 @@ public class LoginController implements Serializable {
     @EJB
     private UserEJB user;
 
+    private User registeredUser;
+
     private String formUsername;
     private String formPassword;
     private String formPasswordConfirm;
-    private String registeredUser;
 
     private String formFirstname;
     private String formMiddlename;
@@ -36,7 +38,7 @@ public class LoginController implements Serializable {
         boolean valid = user.login(formUsername, formPassword);
 
         if (valid) {
-            setRegisteredUser(formUsername);
+            setRegisteredUser(user.getUser(formUsername));
             return "home.jsf";
         }
         return "login.jsf";
@@ -54,7 +56,7 @@ public class LoginController implements Serializable {
 
         boolean registered = user.createUser(formUsername, formPassword, formFirstname, formMiddlename, formLastname, formCountry);
         if (registered) {
-            setRegisteredUser(formUsername);
+            setRegisteredUser(user.getUser(formUsername));
             return "home.jsf";
         }
 
@@ -81,9 +83,9 @@ public class LoginController implements Serializable {
 
     public void setFormPasswordConfirm(String formPasswordConfirm) { this.formPasswordConfirm = formPasswordConfirm; }
 
-    public String getRegisteredUser() { return registeredUser; }
+    public User getRegisteredUser() { return registeredUser; }
 
-    public void setRegisteredUser(String registeredUser) { this.registeredUser = registeredUser; }
+    public void setRegisteredUser(User registeredUser) { this.registeredUser = registeredUser; }
 
     public String getFormFirstname() { return formFirstname; }
 
