@@ -1,0 +1,36 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+>
+
+
+<ui:composition template="layout.xhtml">
+    <ui:define name="title">PG5100 Exam Example - Login</ui:define>
+
+    <ui:define name="content">
+        <h1>Login</h1>
+        <hr/>
+
+        <h:form id="loginForm">
+            <h:panelGrid columns="2">
+                <h:outputLabel value="Username : " />
+                <h:inputText value="#{loginController.formUsername}" id="userId" />
+
+                <h:outputLabel value="Password : " />
+                <h:inputSecret value="#{loginController.formPassword}" id="password" />
+            </h:panelGrid>
+
+            <h:commandButton value="Log in" action="#{loginController.logIn}" id="logIn" />
+            <h:commandButton value="Create new" action="#{loginController.registerNew}" id="create" />
+            <h:button value="Cancel" outcome="home" id="cancel" />
+        </h:form>
+
+        <hr/>
+    </ui:define>
+
+</ui:composition>
+</html>

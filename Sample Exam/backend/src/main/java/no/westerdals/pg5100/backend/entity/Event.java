@@ -12,12 +12,15 @@ import java.util.List;
     @NamedQuery(name = Event.GET_ALL_EVENTS, query =
         "select e from Event e"),
     @NamedQuery(name = Event.GET_ATTENDANTS, query =
-        "select e.attendants.size from Event e where e.id = :id")
+        "select e.attendants.size from Event e where e.id = :id"),
+    @NamedQuery(name = Event.GET_EVENTS_BY_COUNTRY, query =
+        "select e from Event e where e.country = :country")
 })
 public class Event {
 
     public static final String GET_ALL_EVENTS = "Event.GET_ALL_EVENTS";
     public static final String GET_ATTENDANTS = "Event.GET_ATTENDANTS";
+    public static final String GET_EVENTS_BY_COUNTRY = "Event.GET_EVENTS_BY_COUNTRY";
 
     @Id @GeneratedValue
     private Long id;
@@ -28,6 +31,10 @@ public class Event {
     @NotNull
     @Size(min = 2, max = 1024)
     private String description;
+
+    @NotNull
+    @Size(max = 128)
+    private String country;
 
     @OneToMany
     private List<User> attendants;
@@ -47,6 +54,10 @@ public class Event {
     public String getDescription() { return description; }
 
     public void setDescription(String description) { this.description = description; }
+
+    public String getCountry() { return country; }
+
+    public void setCountry(String country) { this.country = country; }
 
     public List<User> getAttendants() {
         if (attendants == null) {

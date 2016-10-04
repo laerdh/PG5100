@@ -1,6 +1,5 @@
 package no.westerdals.pg5100.backend.entity;
 
-import javax.mail.Address;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -24,10 +23,15 @@ public class User {
     @Size(max = 26)
     private String salt;
 
+    @NotNull
+    @Size(min = 2, max = 128)
     private String firstName;
 
+    @Size(max = 128)
     private String middleName;
 
+    @NotNull
+    @Size(min = 2, max = 128)
     private String lastName;
 
     @Embedded

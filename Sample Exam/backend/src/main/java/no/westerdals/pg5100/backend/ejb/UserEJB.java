@@ -1,5 +1,6 @@
 package no.westerdals.pg5100.backend.ejb;
 
+import no.westerdals.pg5100.backend.entity.Address;
 import no.westerdals.pg5100.backend.entity.User;
 import org.apache.commons.codec.digest.DigestUtils;
 
@@ -20,7 +21,7 @@ public class UserEJB {
     public UserEJB() {}
 
 
-    public boolean createUser(String email, String password) {
+    public boolean createUser(String email, String password, String firstName, String middleName, String lastName, String country) {
         if ((email == null || email.isEmpty()) && (password == null || password.isEmpty())) {
             return false;
         }
@@ -39,6 +40,13 @@ public class UserEJB {
         u.setEmail(email);
         u.setSalt(salt);
         u.setHash(hash);
+        u.setFirstName(firstName);
+        u.setMiddleName(middleName);
+        u.setLastName(lastName);
+
+        Address address = new Address();
+        address.setCountry(country);
+        u.setAddress(address);
 
         em.persist(u);
 

@@ -8,6 +8,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import java.util.Date;
+import java.util.List;
 
 @Stateless
 public class EventEJB {
@@ -40,7 +41,7 @@ public class EventEJB {
         return query.executeUpdate();
     }
 
-    public boolean attend(User user, long eventId) {
+    public boolean attend(long eventId, User user) {
         Event event = em.find(Event.class, eventId);
 
         if (event == null) {
@@ -57,5 +58,12 @@ public class EventEJB {
         query.setParameter("id", eventId);
 
         return (int) query.getSingleResult();
+    }
+
+    public List<Event> getEventsByCountry(String country) {
+        Query query = em.createNamedQuery(Event.GET_EVENTS_BY_COUNTRY);
+        query.setParameter("country", country);
+
+        return query.getResultList();
     }
 }

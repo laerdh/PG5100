@@ -23,6 +23,9 @@ public class UserEJBTest {
 
     private static final String USER_EMAIL = "test@test.com";
     private static final String USER_PASSWORD = "test1234";
+    private static final String USER_FIRSTNAME = "Test";
+    private static final String USER_LASTNAME = "Tester";
+    private static final String USER_COUNTRY = "Norway";
 
     @Deployment
     public static JavaArchive createDeployment() {
@@ -48,16 +51,15 @@ public class UserEJBTest {
 
     @Test
     public void testCanCreateUser() throws Exception {
-        assertTrue(user.createUser(USER_EMAIL, USER_PASSWORD));
+        assertTrue(user.createUser(USER_EMAIL, USER_PASSWORD, USER_FIRSTNAME, null, USER_LASTNAME, USER_COUNTRY));
     }
 
     @Test
     public void testCreateUserWithInvalidEmail() throws Exception {
         String email = "t@1";
-        String password = "123";
 
         try {
-            user.createUser(email, password);
+            user.createUser(email, USER_PASSWORD, USER_FIRSTNAME, null, USER_LASTNAME, USER_COUNTRY);
             fail("Should throw exception");
         } catch (Exception ex) {
             assertTrue(hasConstraintViolations(ex));
@@ -66,7 +68,7 @@ public class UserEJBTest {
 
     @Test
     public void testGetUser() throws Exception {
-        assertTrue(user.createUser(USER_EMAIL, USER_PASSWORD));
+        assertTrue(user.createUser(USER_EMAIL, USER_PASSWORD, USER_FIRSTNAME, null, USER_LASTNAME, USER_COUNTRY));
 
         User u = user.getUser(USER_EMAIL);
         assertNotNull(u);
@@ -75,7 +77,7 @@ public class UserEJBTest {
 
     @Test
     public void testLoginUser() throws Exception {
-        assertTrue(user.createUser(USER_EMAIL, USER_PASSWORD));
+        assertTrue(user.createUser(USER_EMAIL, USER_PASSWORD, USER_FIRSTNAME, null, USER_LASTNAME, USER_COUNTRY));
 
         assertTrue(user.login(USER_EMAIL, USER_PASSWORD));
     }
