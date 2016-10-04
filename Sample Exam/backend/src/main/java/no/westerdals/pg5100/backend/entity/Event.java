@@ -26,15 +26,22 @@ public class Event {
     private Long id;
 
     @NotNull
+    @Size(min = 2, max = 128)
+    private String title;
+
+    @NotNull
     private Date eventDate;
 
     @NotNull
-    @Size(min = 2, max = 1024)
-    private String description;
+    private String location;
 
     @NotNull
     @Size(max = 128)
     private String country;
+
+    @NotNull
+    @Size(min = 2, max = 1024)
+    private String description;
 
     @OneToMany
     private List<User> attendants;
@@ -47,9 +54,17 @@ public class Event {
 
     public void setId(Long id) { this.id = id; }
 
+    public String getTitle() { return title; }
+
+    public void setTitle(String title) { this.title = title; }
+
     public Date getEventDate() { return eventDate; }
 
     public void setEventDate(Date eventDate) { this.eventDate = eventDate; }
+
+    public String getLocation() { return location; }
+
+    public void setLocation(String location) { this.location = location; }
 
     public String getDescription() { return description; }
 

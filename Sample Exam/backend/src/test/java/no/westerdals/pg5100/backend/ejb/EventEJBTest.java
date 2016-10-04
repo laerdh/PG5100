@@ -50,27 +50,37 @@ public class EventEJBTest {
 
     @Test
     public void testCreateEvent() throws Exception {
-        assertNotNull(event.create(new Date(), "Description"));
+        assertNotNull(event.create("Birthday party", new Date(), "Oslo", "Norway", "Description"));
     }
 
     @Test
     public void testCreateEventWithEmptyDescription() throws Exception {
         String description = "";
 
-        assertNull(event.create(new Date(), description));
+        try {
+            event.create("Birthday party", new Date(), "Oslo", "Norway", description);
+            fail("Should throw ConstraintViolationException");
+        } catch (Exception e) {
+            assertTrue(hasConstraintViolation(e));
+        }
     }
 
     @Test
     public void testCreateEventWithNullAsDescription() throws Exception {
         String description = null;
 
-        assertNull(event.create(new Date(), description));
+        try {
+            event.create("Birthday party", new Date(), "Oslo", "Norway", description);
+            fail("Should throw ConstraintViolationException");
+        } catch (Exception e) {
+            assertTrue(hasConstraintViolation(e));
+        }
     }
 
     @Test
     public void testDeleteEvent() throws Exception {
         String description = "Birthday party";
-        Long id = event.create(new Date(), description);
+        Long id = event.create("Birthday party", new Date(), "Oslo", "Norway", description);
 
         assertNotNull(id);
 
@@ -86,10 +96,13 @@ public class EventEJBTest {
         String firstname = "Test";
         String lastname = "Tester";
         String country = "Norway";
+
+        String title = "Birthday party";
+        String location = "Oslo";
         String description = "Description";
 
         assertTrue(user.createUser(username, password, firstname, null, lastname, country));
-        Long id = event.create(new Date(), description);
+        Long id = event.create(title, new Date(), location, country, description);
 
         assertNotNull(id);
         User u = user.getUser(username);
@@ -103,5 +116,15 @@ public class EventEJBTest {
 
         // Assert that attendants has increased by one
         assertEquals(attendants, 1);
+    }
+
+    private boolean hasConstraintViolation(Exception e) {
+        Throwable t = e.getCause();
+
+        while(t != null && !(t instanceof ConstraintViolationException)) {
+            t = t.getCause();
+        }
+
+        return t != null;
     }
 }

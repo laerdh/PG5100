@@ -20,14 +20,14 @@ public class EventEJB {
     public EventEJB() {}
 
 
-    public Long create(Date eventDate, String description) {
-        if (eventDate == null || (description == null || description.isEmpty())) {
-            return null;
-        }
+    public Long create(String title, Date eventDate, String location, String country, String description) {
 
         Event event = new Event();
+        event.setTitle(title);
         event.setEventDate(eventDate);
+        event.setLocation(location);
         event.setDescription(description);
+        event.setCountry(country);
 
         em.persist(event);
 
