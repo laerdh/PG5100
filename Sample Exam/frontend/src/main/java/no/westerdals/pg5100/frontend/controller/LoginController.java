@@ -1,5 +1,6 @@
 package no.westerdals.pg5100.frontend.controller;
 
+import no.westerdals.pg5100.backend.Countries;
 import no.westerdals.pg5100.backend.ejb.UserEJB;
 import no.westerdals.pg5100.backend.entity.User;
 
@@ -7,6 +8,7 @@ import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
 import java.io.Serializable;
+import java.util.List;
 
 @Named
 @SessionScoped
@@ -63,8 +65,12 @@ public class LoginController implements Serializable {
         return "newUser.jsf";
     }
 
+    public List<String> getCountries() {
+        return Countries.getCountries();
+    }
+
     public boolean isLoggedIn() {
-        return getRegisteredUser() != null;
+        return registeredUser != null;
     }
 
     public boolean passwordsMatch() {

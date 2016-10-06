@@ -35,12 +35,7 @@
 
                 <h:outputLabel value="Country : " />
                 <h:selectOneMenu value="#{loginController.formCountry}">
-                    <f:selectItem itemValue="Denmark" itemLabel="Denmark" />
-                    <f:selectItem itemValue="Italy" itemLabel="Italy" />
-                    <f:selectItem itemValue="Norway" itemLabel="Norway" />
-                    <f:selectItem itemValue="Sweden" itemLabel="Sweden" />
-                    <f:selectItem itemValue="United Kingdom" itemLabel="United Kingdom" />
-                    <f:selectItem itemValue="USA" itemLabel="USA" />
+                    <f:selectItems value="#{loginController.countries}"/>
                 </h:selectOneMenu>
 
                 <h:commandButton value="Create" action="#{loginController.registerNew}" />

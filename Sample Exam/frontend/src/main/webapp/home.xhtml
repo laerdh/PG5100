@@ -16,9 +16,17 @@
         <h1>Event List Home Page</h1>
         <hr/>
 
-        <c:if test="#{loginController.isLoggedIn()}">
+        <c:if test="#{loginController.loggedIn}">
             <h:button value="Create Event" outcome="newEvent"/>
+
+            <h:form id="myCountryOnlyForm">
+                <h:selectBooleanCheckbox
+                        value="#{eventController.eventsMyCountry}"
+                        onclick="submit()" id="myCountryOnly"/>
+                <h:outputLabel for="myCountryOnly" value="Only #{loginController.registeredUser.address.country}" />
+            </h:form>
         </c:if>
+
         <c:choose>
             <c:when test="#{eventController.events.isEmpty()}">
                 <h:outputText value="No events yet :( Be the first to create one!"/>
@@ -55,6 +63,19 @@
                         <f:facet name="header">Participants</f:facet>
                         #{event.attendants.size()}
                     </h:column>
+
+                    <c:if test="#{loginController.loggedIn}">
+                        <h:column>
+                            <f:facet name="header">Going</f:facet>
+                            <h:form>
+                                <h:selectBooleanCheckbox
+                                        value="#{eventController.attendMap[event.id]}"
+                                        onclick="submit()"
+                                        valueChangeListener="#{eventController.setAttendance(event.id, !eventController.attendMap[event.id])}" />
+                            </h:form>
+                        </h:column>
+                    </c:if>
+
                 </h:dataTable>
             </c:otherwise>
         </c:choose>

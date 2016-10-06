@@ -79,33 +79,4 @@ public class EventEJBTest {
 
         assertEquals(1, n);
     }
-
-    @Test
-    public void testGetAttendants() throws Exception {
-        String username = "test@test.com";
-        String password = "test1234";
-        String firstname = "Test";
-        String lastname = "Tester";
-        String country = "Norway";
-
-        String title = "Birthday party";
-        String location = "Oslo";
-        String description = "Description";
-
-        assertTrue(user.createUser(username, password, firstname, null, lastname, country));
-        Long id = event.create(title, new Date(), location, country, description);
-
-        assertNotNull(id);
-        User u = user.getUser(username);
-        assertNotNull(u);
-
-        int attendants = event.getAttendants(id);
-        assertEquals(attendants, 0);
-
-        assertTrue(event.attend(id, u));
-        attendants = event.getAttendants(id);
-
-        // Assert that attendants has increased by one
-        assertEquals(attendants, 1);
-    }
 }

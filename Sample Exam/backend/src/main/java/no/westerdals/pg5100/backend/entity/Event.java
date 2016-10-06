@@ -46,7 +46,7 @@ public class Event {
     @Size(min = 2, max = 1024)
     private String description;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.EAGER)
     private List<User> attendants;
 
 

@@ -1,11 +1,10 @@
 package no.westerdals.pg5100.backend.entity;
 
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+import java.util.List;
 
 @Entity
 public class User {
@@ -36,6 +35,9 @@ public class User {
 
     @Embedded
     private Address address;
+
+    @ManyToMany(mappedBy = "attendants", fetch = FetchType.EAGER)
+    private List<Event> eventsToAttend;
 
 
     public User() {}
@@ -68,4 +70,8 @@ public class User {
     public Address getAddress() { return address; }
 
     public void setAddress(Address address) { this.address = address; }
+
+    public List<Event> getEventsToAttend() { return eventsToAttend; }
+
+    public void setEventsToAttend(List<Event> eventsToAttend) { this.eventsToAttend = eventsToAttend; }
 }

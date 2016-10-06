@@ -1,25 +1,30 @@
 package no.westerdals.pg5100.frontend.controller;
 
 import no.westerdals.pg5100.backend.ejb.EventEJB;
+import no.westerdals.pg5100.backend.ejb.UserEJB;
 import no.westerdals.pg5100.backend.entity.Event;
 import no.westerdals.pg5100.backend.entity.User;
 
+import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
-import javax.enterprise.context.RequestScoped;
+import javax.enterprise.context.SessionScoped;
+import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Named
-@RequestScoped
+@SessionScoped
 public class EventController implements Serializable {
 
     @EJB
     private EventEJB event;
 
-    private List<String> countries = Arrays.asList("Albania", "Belgium", "Denmark", "Italy", "Norway", "Sweden", "United Kingdom", "USA");
+    @Inject
+    private LoginController loginController;
 
     private String formEventTitle;
     private Date formEventDate;
@@ -28,8 +33,17 @@ public class EventController implements Serializable {
     private String formEventDescription;
 
 
+    private boolean eventsMyCountry;
+    private Map<Long, Boolean> attendMap;
+
+
     public EventController() {}
 
+    @PostConstruct
+    public void init() {
+        eventsMyCountry = true;
+        attendMap = new ConcurrentHashMap<>();
+    }
 
     public String registerNew() {
         Long id = event.create(formEventTitle, formEventDate, formEventLocation, formEventCountry,
@@ -48,21 +62,38 @@ public class EventController implements Serializable {
         return "home.jsf";
     }
 
-    public String attend(long eventId, User user) {
-        if (user != null) {
-            event.attend(eventId, user);
+    public String setAttendance(long eventId, Boolean attend) {
+        if (attend != null && attend) {
+            event.attend(eventId, loginController.getRegisteredUser().getEmail());
+        } else {
+            event.unAttend(eventId, loginController.getRegisteredUser().getEmail());
         }
         return "home.jsf";
     }
 
     public List<Event> getEvents() {
-        return event.getAllEvents();
-    }
+        List<Event> events;
 
-//    public List<Event> getEventsByCountry() {
-//        String country = user.getRegisteredUser().getAddress().getCountry();
-//        return event.getEventsByCountry(country);
-//    }
+        if (!loginController.isLoggedIn() || !eventsMyCountry) {
+            events = event.getAllEvents();
+        } else {
+            events = event.getEventsByCountry(loginController.getFormCountry());
+        }
+
+        User user = loginController.getRegisteredUser();
+        if (user != null) {
+            events.stream().map(Event::getId)
+                    .forEach(id -> {
+                        if (event.isAttending(id, user.getEmail())) {
+                            attendMap.put(id, true);
+                        } else {
+                            attendMap.put(id, false);
+                        }
+                    });
+        }
+
+        return events;
+    }
 
     public String getFormEventTitle() { return formEventTitle; }
 
@@ -84,6 +115,11 @@ public class EventController implements Serializable {
 
     public void setFormEventDescription(String formEventDescription) { this.formEventDescription = formEventDescription; }
 
-    public List<String> getCountries() { return countries; }
+    public boolean getEventsMyCountry() { return eventsMyCountry; }
+
+    public void setEventsMyCountry(boolean eventsMyCountry) { this.eventsMyCountry = eventsMyCountry; }
+
+    public Map<Long, Boolean> getAttendMap() { return attendMap; }
+
 }
 
