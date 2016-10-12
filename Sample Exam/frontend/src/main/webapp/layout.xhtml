@@ -21,14 +21,14 @@
 
     <c:choose>
         <c:when test="#{loginController.loggedIn}">
-            <h:form id="loginTop">
+            <h:form id="logoutFormTop">
                 <h:outputLabel value="Hi #{loginController.registeredUser.firstName}" />
-                <h:commandButton value="Log out" action="#{loginController.logOut}" />
+                <h:commandButton value="Log out" action="#{loginController.logOut}" id="logoutButton" />
             </h:form>
         </c:when>
         <c:otherwise>
             <h:outputLabel value="Not logged in" />
-            <h:button value="Log in" outcome="login" />
+            <h:button value="Log in" outcome="login" id="loginButton" />
         </c:otherwise>
     </c:choose>
 

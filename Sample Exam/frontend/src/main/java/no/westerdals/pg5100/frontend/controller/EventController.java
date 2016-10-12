@@ -1,7 +1,6 @@
 package no.westerdals.pg5100.frontend.controller;
 
 import no.westerdals.pg5100.backend.ejb.EventEJB;
-import no.westerdals.pg5100.backend.ejb.UserEJB;
 import no.westerdals.pg5100.backend.entity.Event;
 import no.westerdals.pg5100.backend.entity.User;
 
@@ -32,12 +31,12 @@ public class EventController implements Serializable {
     private String formEventLocation;
     private String formEventDescription;
 
-
     private boolean eventsMyCountry;
     private Map<Long, Boolean> attendMap;
 
 
     public EventController() {}
+
 
     @PostConstruct
     public void init() {
