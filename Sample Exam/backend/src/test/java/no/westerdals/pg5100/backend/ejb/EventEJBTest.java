@@ -36,9 +36,6 @@ public class EventEJBTest {
     private EventEJB event;
 
     @EJB
-    private UserEJB user;
-
-    @EJB
     private DeleterEJB deleter;
 
 
@@ -46,7 +43,6 @@ public class EventEJBTest {
     @After
     public void emptyDatabase() throws Exception {
         deleter.deleteEntities(Event.class);
-        deleter.deleteEntities(User.class);
     }
 
     @Test

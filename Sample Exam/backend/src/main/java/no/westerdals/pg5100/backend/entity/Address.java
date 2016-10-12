@@ -1,5 +1,7 @@
 package no.westerdals.pg5100.backend.entity;
 
+import no.westerdals.pg5100.backend.validation.Country;
+
 import javax.persistence.Embeddable;
 
 @Embeddable
@@ -7,6 +9,8 @@ public class Address {
 
     private String street;
     private int postcode;
+
+    @Country
     private String country;
 
 

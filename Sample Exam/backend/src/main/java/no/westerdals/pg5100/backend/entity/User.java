@@ -1,5 +1,7 @@
 package no.westerdals.pg5100.backend.entity;
 
+import no.westerdals.pg5100.backend.validation.NotEmpty;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -10,26 +12,25 @@ import java.util.List;
 public class User {
 
     @Id
-    @NotNull
     @Pattern(regexp =
             "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$")
     private String email;
 
-    @NotNull
+    @NotEmpty
     private String hash;
 
-    @NotNull
+    @NotEmpty
     @Size(max = 26)
     private String salt;
 
-    @NotNull
+    @NotEmpty
     @Size(min = 2, max = 128)
     private String firstName;
 
     @Size(max = 128)
     private String middleName;
 
-    @NotNull
+    @NotEmpty
     @Size(min = 2, max = 128)
     private String lastName;
 

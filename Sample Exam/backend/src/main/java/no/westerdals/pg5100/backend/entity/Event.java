@@ -1,5 +1,8 @@
 package no.westerdals.pg5100.backend.entity;
 
+import no.westerdals.pg5100.backend.validation.Country;
+import no.westerdals.pg5100.backend.validation.NotEmpty;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -28,21 +31,21 @@ public class Event {
     @Id @GeneratedValue
     private Long id;
 
-    @NotNull
+    @NotEmpty
     @Size(min = 2, max = 128)
     private String title;
 
     @NotNull
     private Date eventDate;
 
-    @NotNull
+    @NotEmpty
     private String location;
 
-    @NotNull
+    @Country
     @Size(max = 128)
     private String country;
 
-    @NotNull
+    @NotEmpty
     @Size(min = 2, max = 1024)
     private String description;
 
