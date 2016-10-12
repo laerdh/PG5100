@@ -22,7 +22,7 @@
     <c:choose>
         <c:when test="#{loginController.loggedIn}">
             <h:form id="logoutFormTop">
-                <h:outputLabel value="Hi #{loginController.registeredUser.firstName}" />
+                <h:outputLabel value="Hi #{loginController.registeredUser.firstName}" id="greeting" />
                 <h:commandButton value="Log out" action="#{loginController.logOut}" id="logoutButton" />
             </h:form>
         </c:when>

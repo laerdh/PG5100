@@ -4,6 +4,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import no.westerdals.pg5100.frontend.po.CreateUserPageObject;
+import no.westerdals.pg5100.frontend.po.HomePageObject;
+import no.westerdals.pg5100.frontend.po.LoginPageObject;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -12,6 +15,7 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeTrue;
 
@@ -107,7 +111,6 @@ public abstract class SeleniumTestBase {
     public static void tearDown(){
         driver.close();
     }
-
 
     @Before
     public void checkIfWildflyIsRunning(){

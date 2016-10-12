@@ -16,7 +16,7 @@ public class LoginPageObject extends PageObject {
         return getDriver().getTitle().contains("PG5100 Exam Example - Login");
     }
 
-    public HomePageObject createUser(String username, String password) {
+    public HomePageObject loginUser(String username, String password) {
         WebElement id = getDriver().findElement(By.id("loginForm:userId"));
         WebElement pw = getDriver().findElement(By.id("loginForm:password"));
         WebElement login = getDriver().findElement(By.id("loginForm:logIn"));
@@ -30,5 +30,14 @@ public class LoginPageObject extends PageObject {
 
         HomePageObject po = new HomePageObject(getDriver());
         return po;
+    }
+
+    public CreateUserPageObject clickCreateUser() {
+        WebElement create = getDriver().findElement(By.id("loginForm:createUser"));
+
+        create.click();
+        waitForPageToLoad();
+
+        return new CreateUserPageObject(getDriver());
     }
 }

@@ -21,13 +21,7 @@ public class HomePageObject extends PageObject {
     public void toStartingPage() {
         getDriver().get(getBaseUrl() + "/home.jsf");
         waitForPageToLoad();
-        doLogOut();
-    }
-
-    public boolean isLoggedIn() {
-        List<WebElement> elements = getDriver().findElements(By.id("logoutFormTop:logoutButton"));
-
-        return !elements.isEmpty();
+        clickLogOut();
     }
 
     public boolean isLoggedOut() {
@@ -36,7 +30,7 @@ public class HomePageObject extends PageObject {
         return !elements.isEmpty();
     }
 
-    public LoginPageObject doLogIn() {
+    public LoginPageObject clickLogIn() {
         if (isLoggedIn()) {
             return null;
         }
@@ -49,7 +43,7 @@ public class HomePageObject extends PageObject {
         return po;
     }
 
-    public void doLogOut() {
+    public void clickLogOut() {
         if (isLoggedIn()) {
             WebElement logout = getDriver().findElement(By.id("logoutFormTop:logoutButton"));
             logout.click();

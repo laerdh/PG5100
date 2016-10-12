@@ -1,9 +1,13 @@
 package no.westerdals.pg5100.frontend.utils;
 
+import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.WebDriverWait;
+
+import java.util.List;
 
 /**
  * See Page Object at:
@@ -44,5 +48,19 @@ public abstract class PageObject {
         //keep executing the given JS till it returns "true", when page is fully loaded and ready
         return wait.until((ExpectedCondition<Boolean>) input -> (
                 (JavascriptExecutor) input).executeScript("return document.readyState").equals("complete"));
+    }
+
+    public boolean isLoggedIn() {
+        List<WebElement> elements = driver.findElements(By.id("logoutFormTop"));
+
+        return !elements.isEmpty();
+    }
+
+    public boolean isLoggedIn(String name) {
+        if (!isLoggedIn()) {
+            return false;
+        }
+
+        return driver.findElement(By.id("logoutFormTop:greeting")).getText().contains(name);
     }
 }

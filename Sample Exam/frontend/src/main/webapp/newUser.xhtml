@@ -7,7 +7,7 @@
       xmlns:f="http://xmlns.jcp.org/jsf/core">
 <ui:composition template="layout.xhtml">
 
-    <ui:define name="title">PG5100 Exam Example - New user</ui:define>
+    <ui:define name="title">PG5100 Exam Example - Create user</ui:define>
 
     <ui:define name="content">
         <h1>Create User</h1>
@@ -34,11 +34,11 @@
                 <h:inputText value="#{loginController.formLastname}" id="lastName" />
 
                 <h:outputLabel value="Country : " />
-                <h:selectOneMenu value="#{loginController.formCountry}">
+                <h:selectOneMenu value="#{loginController.formCountry}" id="country">
                     <f:selectItems value="#{loginController.countries}"/>
                 </h:selectOneMenu>
 
-                <h:commandButton value="Create" action="#{loginController.registerNew}" />
+                <h:commandButton value="Create" action="#{loginController.registerNew}" id="createButton" />
             </h:panelGrid>
         </h:form>
     </ui:define>
