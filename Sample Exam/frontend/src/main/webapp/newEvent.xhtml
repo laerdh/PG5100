@@ -18,26 +18,26 @@
                 <h:form id="newEventForm">
                     <h:panelGrid columns="2">
                         <h:outputLabel value="Title : "/>
-                        <h:inputText value="#{eventController.formEventTitle}" />
+                        <h:inputText value="#{eventController.formEventTitle}" id="eventTitle" />
 
                         <h:outputLabel value="Date : " />
-                        <h:inputText value="#{eventController.formEventDate}">
+                        <h:inputText value="#{eventController.formEventDate}" id="eventDate">
                             <f:convertDateTime pattern="yyyy-MM-dd" />
                         </h:inputText>
 
                         <h:outputLabel value="Country : " />
-                        <h:selectOneMenu value="#{eventController.formEventCountry}">
+                        <h:selectOneMenu value="#{eventController.formEventCountry}" id="eventCountry">
                             <f:selectItems value="#{loginController.countries}" />
                         </h:selectOneMenu>
 
                         <h:outputLabel value="Location : " />
-                        <h:inputText value="#{eventController.formEventLocation}" />
+                        <h:inputText value="#{eventController.formEventLocation}" id="eventLocation"/>
 
                         <h:outputLabel value="Description : " />
-                        <h:inputText value="#{eventController.formEventDescription}" />
+                        <h:inputText value="#{eventController.formEventDescription}" id="eventDescription"/>
 
-                        <h:commandButton value="Create" action="#{eventController.registerNew}" />
-                        <h:button value="Cancel" outcome="home" />
+                        <h:commandButton value="Create" action="#{eventController.registerNew}" id="createEvent"/>
+                        <h:button value="Cancel" outcome="home" id="cancel"/>
                     </h:panelGrid>
                 </h:form>
             </c:when>

@@ -73,23 +73,47 @@ public class WebPageIT extends SeleniumTestBase {
 
     @Test
     public void testLogin() throws Exception {
+        createAndLoginUser("foo@bar.com", "test1234", "Foo", "Bar", "Italy");
+        assertTrue(po.isOnPage());
+
+        po.clickLogOut();
+        assertTrue(po.isLoggedOut());
+
         LoginPageObject login = po.clickLogIn();
-        assertTrue(login.isOnPage());
+        login.loginUser("foo@bar.com", "test1234");
+        assertTrue(po.isOnPage());
+        assertTrue(po.isLoggedIn());
+    }
 
+    @Test
+    public void testCreateOneEvent() throws Exception {
+        createAndLoginUser("foobar@foobar.com", "test1234", "Foobar", "Foobar", "Sweden");
+        assertTrue(po.isOnPage());
+
+        CreateEventPageObject event = po.clickCreateEvent();
+        assertTrue(event.isOnPage());
+
+        po = event.createEvent("GardenParty", "Sweden", "Stockholm", "Fun");
+        assertTrue(po.isOnPage());
+
+        int expected = 1;
+        int actual = po.getNumberOfDisplayedEvents();
+        assertEquals("Should have created one event", expected, actual);
+    }
+
+    private void createAndLoginUser(String username, String password, String firstname, String lastname, String country) throws Exception {
+        po.clickLogOut();
+        LoginPageObject login = po.clickLogIn();
         CreateUserPageObject create = login.clickCreateUser();
-        assertTrue(create.isOnPage());
 
-        HomePageObject home = create.createUser("eric@eric.com", "test1234", "test1234", "Eric", "", "Ericsson", "Norway");
-        assertTrue(home.isOnPage());
-        assertTrue(home.isLoggedIn("Eric"));
+        po = create.createUser(username, password, password, firstname, "", lastname, country);
+        assertTrue(po.isLoggedIn());
+    }
 
-        home.clickLogOut();
-        assertTrue(home.isLoggedOut());
-
-        login = home.clickLogIn();
-        home = login.loginUser("eric@eric.com", "test1234");
-
-        assertTrue(home.isOnPage());
-        assertTrue(home.isLoggedIn());
+    private void loginExistingUser(String username, String password) {
+        po.clickLogOut();
+        LoginPageObject login = po.clickLogIn();
+        po = login.loginUser(username, password);
+        assertTrue(po.isOnPage());
     }
 }

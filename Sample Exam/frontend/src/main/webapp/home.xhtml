@@ -19,7 +19,7 @@
         <hr/>
 
         <c:if test="#{loginController.loggedIn}">
-            <h:button value="Create Event" outcome="newEvent"/>
+            <h:button value="Create Event" outcome="newEvent" id="createEventButton"/>
 
             <h:form id="myCountryOnlyForm">
                 <h:selectBooleanCheckbox
@@ -35,7 +35,7 @@
             </c:when>
             <c:otherwise>
                 <h3>Future events</h3>
-                <h:dataTable value="#{eventController.events}" var="event">
+                <h:dataTable value="#{eventController.events}" var="event" id="eventTable">
                     <h:column>
                         <f:facet name="header">Event</f:facet>
                         #{event.title}

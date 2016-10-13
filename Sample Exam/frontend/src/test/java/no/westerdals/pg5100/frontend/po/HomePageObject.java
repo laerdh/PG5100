@@ -50,4 +50,24 @@ public class HomePageObject extends PageObject {
             waitForPageToLoad();
         }
     }
+
+    public CreateEventPageObject clickCreateEvent() {
+        if (isLoggedOut()) {
+            return null;
+        }
+
+        WebElement create = getDriver().findElement(By.id("createEventButton"));
+        create.click();
+        waitForPageToLoad();
+
+        CreateEventPageObject po = new CreateEventPageObject(getDriver());
+        return po;
+    }
+
+    public int getNumberOfDisplayedEvents() {
+        List<WebElement> elements = getDriver().findElements(
+                By.xpath("//table[@id='eventTable']//tbody//tr[string-length(text()) > 0]"));
+
+        return elements.size();
+    }
 }
